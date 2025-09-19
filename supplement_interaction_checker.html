@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supplement Interaction Checker - Wuksy</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #ff9a56 0%, #ff6b95 100%);
+            padding: 40px 30px;
+            text-align: center;
+            color: white;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .warning-banner {
+            background: #fff3cd;
+            border: 1px solid #ffeeba;
+            color: #856404;
+            padding: 15px;
+            margin: 20px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: 600;
+        }
+        
+        .content {
+            padding: 40px 30px;
+        }
+        
+        .input-section {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+        
+        .supplement-input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .supplement-select {
+            flex: 2;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            min-width: 250px;
+        }
+        
+        .supplement-select:focus {
+            outline: none;
+            border-color: #ff9a56;
+        }
+        
+        .dose-input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            min-width: 120px;
+        }
+        
+        .dose-input:focus {
+            outline: none;
+            border-color: #ff9a56;
+        }
+        
+        .timing-select {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            min-width: 120px;
+        }
+        
+        .timing-select:focus {
+            outline: none;
+            border-color: #ff9a56;
+        }
+        
+        .remove-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 12px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        
+        .remove-btn:hover {
+            background: #c82333;
+        }
+        
+        .add-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-top: 15px;
+        }
+        
+        .add-btn:hover {
+            background: #218838;
+        }
+        
+        .check-btn {
+            background: linear-gradient(135deg, #ff9a56 0%, #ff6b95 100%);
+            color: white;
+            border: none;
+            padding: 20px 40px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: transform 0.3s;
+            display: block;
+            margin: 30px auto;
+        }
+        
+        .check-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .results-section {
+            display: none;
+            margin-top: 30px;
+        }
+        
+        .result-card {
+            margin-bottom: 25px;
+            border-radius: 15px;
+            padding: 25px;
+            border-left: 5px solid;
+        }
+        
+        .result-safe {
+            background: #d4edda;
+            border-color: #28a745;
+            color: #155724;
+        }
+        
+        .result-caution {
+            background: #fff3cd;
+            border-color: #ffc107;
+            color: #856404;
+        }
+        
+        .result-warning {
+            background: #f8d7da;
+            border-color: #dc3545;
+            color: #721c24;
+        }
+        
+        .result-icon {
+            font-size: 1.5rem;
+            margin-right: 10px;
+        }
+        
+        .result-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .result-description {
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+        
+        .recommendations {
+            background: rgba(255,255,255,0.5);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+        
+        .recommendations h4 {
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        .recommendations ul {
+            margin-left: 20px;
+        }
+        
+        .recommendations li {
+            margin-bottom: 5px;
+        }
+        
+        .summary-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-top: 30px;
+            text-align: center;
+        }
+        
+        .summary-score {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .timing-chart {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            color: #333;
+        }
+        
+        .timing-chart h3 {
+            margin-bottom: 15px;
+            color: #667eea;
+        }
+        
+        .time-slot {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 15px;
+            margin: 8px 0;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .time-label {
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        .supplements-list {
+            flex: 1;
+            margin-left: 15px;
+            color: #666;
+        }
+        
+        .cta-section {
+            background: #1a1a1a;
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+        
+        .cta-section h2 {
+            margin-bottom: 15px;
+            font-size: 1.8rem;
+        }
+        
+        .cta-section p {
+            margin-bottom: 25px;
+            opacity: 0.9;
+        }
+        
+        .signup-form {
+            display: flex;
+            gap: 10px;
+            max-width: 400px;
+            margin: 0 auto;
+            flex-wrap: wrap;
+        }
+        
+        .signup-form input {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        
+        .signup-btn {
+            background: #ff9a56;
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+        
+        .signup-btn:hover {
+            background: #ff8a46;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .content {
+                padding: 20px 15px;
+            }
+            
+            .supplement-input-group {
+                flex-direction: column;
+            }
+            
+            .supplement-select,
+            .dose-input,
+            .timing-select {
+                min-width: 100%;
+            }
+            
+            .signup-form {
+                flex-direction: column;
+            }
+            
+            .signup-form input {
+                margin-bottom: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚗️ Supplement Interaction Checker</h1>
+            <p>Ensure your supplements work together safely and effectively</p>
+        </div>
+        
+        <div class="warning-banner">
+            ⚠️ This tool is for educational purposes only. Always consult with healthcare providers before making changes to your supplement routine.
+        </div>
+        
+        <div class="content">
+            <div class="input-section">
+                <h2 class="section-title">💊 Your Current Supplements</h2>
+                <p style="margin-bottom: 25px; color: #666;">Add all supplements, vitamins, and medications you're currently taking:</p>
+                
+                <div id="supplementsContainer">
+                    <div class="supplement-input-group">
+                        <select class="supplement-select" onchange="updateInteractions()">
+                            <option value="">Select supplement...</option>
+                            <option value="vitamin_d">Vitamin D3</option>
+                            <option value="vitamin_c">Vitamin C</option>
+                            <option value="b12">Vitamin B12</option>
+                            <option value="b_complex">B-Complex</option>
+                            <option value="iron">Iron</option>
+                            <option value="calcium">Calcium</option>
+                            <option value="magnesium">Magnesium</option>
+                            <option value="zinc">Zinc</option>
+                            <option value="omega3">Omega-3 Fish Oil</option>
+                            <option value="coq10">CoQ10</option>
+                            <option value="curcumin">Curcumin</option>
+                            <option value="probiotics">Probiotics</option>
+                            <option value="multivitamin">Multivitamin</option>
+                            <option value="ashwagandha">Ashwagandha</option>
+                            <option value="melatonin">Melatonin</option>
+                            <option value="caffeine">Caffeine/Pre-workout</option>
+                            <option value="creatine">Creatine</option>
+                            <option value="protein">Protein Powder</option>
+                            <option value="vitamin_k">Vitamin K2</option>
+                            <option value="biotin">Biotin</option>
+                            <option value="folic_acid">Folic Acid/Folate</option>
+                            <option value="green_tea">Green Tea Extract</option>
+                        </select>
+                        <input type="text" class="dose-input" placeholder="Dose (e.g., 1000mg)" onchange="updateInteractions()">
+                        <select class="timing-select" onchange="updateInteractions()">
+                            <option value="morning">Morning</option>
+                            <option value="afternoon">Afternoon</option>
+                            <option value="evening">Evening</option>
+                            <option value="bedtime">Bedtime</option>
+                            <option value="with_meals">With meals</option>
+                            <option value="empty_stomach">Empty stomach</option>
+                        </select>
+                        <button class="remove-btn" onclick="removeSupplementRow(this)" style="display: none;">Remove</button>
+                    </div>
+                </div>
+                
+                <button class="add-btn" onclick="addSupplementRow()">+ Add Another Supplement</button>
+                
+                <button class="check-btn" onclick="checkInteractions()">
+                    🔍 Check My Supplement Stack
+                </button>
+            </div>
+            
+            <div class="results-section" id="resultsSection">
+                <h2 class="section-title">📋 Interaction Analysis</h2>
+                <div id="interactionResults">
+                    <!-- Dynamic results will appear here -->
+                </div>
+                
+                <div class="summary-section" id="summarySection">
+                    <div class="summary-score" id="safetyScore">85</div>
+                    <h2>Safety Score</h2>
+                    <p id="scoreDescription">Your supplement stack is generally safe with minor optimization opportunities</p>
+                    
+                    <div class="timing-chart" id="timingChart">
+                        <h3>⏰ Optimal Timing Schedule</h3>
+                        <div id="timingSchedule">
+                            <!-- Dynamic timing recommendations -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="cta-section">
+            <h2>🧬 Want Personalized Supplement Optimization?</h2>
+            <p>This checker gives you basic interactions. Wuksy provides AI-powered personalized recommendations based on your blood work.</p>
+            <p><strong>Get 50% off your first Wuksy analysis + personalized supplement protocol</strong></p>
+            
+            <form class="signup-form" id="signupForm">
+                <input type="email" placeholder="Enter your email address" required id="emailInput">
+                <button type="submit" class="signup-btn">Get Personalized Analysis</button>
+            </form>
+            
+            <p style="margin-top: 15px; font-size: 0.9rem; opacity: 0.7;">
+                🔒 Join 2,847+ people optimizing their health with AI-powered insights
+            </p>
+        </div>
+    </div>
+
+    <script>
+        const supplementData = {
+            vitamin_d: { name: "Vitamin D3", category: "fat_soluble", absorption: "with_fat" },
+            vitamin_c: { name: "Vitamin C", category: "water_soluble", absorption: "any_time" },
+            b12: { name: "Vitamin B12", category: "water_soluble", absorption: "morning" },
+            b_complex: { name: "B-Complex", category: "water_soluble", absorption: "morning" },
+            iron: { name: "Iron", category: "mineral", absorption: "empty_stomach" },
+            calcium: { name: "Calcium", category: "mineral", absorption: "with_food" },
+            magnesium: { name: "Magnesium", category: "mineral", absorption: "evening" },
+            zinc: { name: "Zinc", category: "mineral", absorption: "empty_stomach" },
+            omega3: { name: "Omega-3 Fish Oil", category: "fat_soluble", absorption: "with_fat" },
+            coq10: { name: "CoQ10", category: "fat_soluble", absorption: "with_fat" },
+            curcumin: { name: "Curcumin", category: "herb", absorption: "with_fat" },
+            probiotics: { name: "Probiotics", category: "other", absorption: "empty_stomach" },
+            multivitamin: { name: "Multivitamin", category: "mixed", absorption: "with_food" },
+            ashwagandha: { name: "Ashwagandha", category: "herb", absorption: "with_food" },
+            melatonin: { name: "Melatonin", category: "hormone", absorption: "bedtime" },
+            caffeine: { name: "Caffeine", category: "stimulant", absorption: "morning" },
+            creatine: { name: "Creatine", category: "amino_acid", absorption: "any_time" },
+            protein: { name: "Protein Powder", category: "amino_acid", absorption: "post_workout" },
+            vitamin_k: { name: "Vitamin K2", category: "fat_soluble", absorption: "with_fat" },
+            biotin: { name: "Biotin", category: "water_soluble", absorption: "morning" },
+            folic_acid: { name: "Folic Acid", category: "water_soluble", absorption: "morning" },
+            green_tea: { name: "Green Tea Extract", category: "herb", absorption: "between_meals" }
+        };
+
+        const interactions = {
+            // Negative interactions
+            negative: [
+                {
+                    supplements: ["iron", "calcium"],
+                    severity: "high",
+                    description: "Calcium significantly reduces iron absorption",
+                    recommendation: "Take iron and calcium at least 2 hours apart"
+                },
+                {
+                    supplements: ["iron", "zinc"],
+                    severity: "medium",
+                    description: "Iron and zinc compete for absorption",
+                    recommendation: "Take on alternating days or separate by 2+ hours"
+                },
+                {
+                    supplements: ["calcium", "magnesium"],
+                    severity: "low",
+                    description: "High doses can compete for absorption",
+                    recommendation: "Keep calcium:magnesium ratio at 2:1, can take together"
+                },
+                {
+                    supplements: ["caffeine", "melatonin"],
+                    severity: "high",
+                    description: "Caffeine counteracts melatonin's sleep effects",
+                    recommendation: "Avoid caffeine 6+ hours before melatonin"
+                },
+                {
+                    supplements: ["green_tea", "iron"],
+                    severity: "medium",
+                    description: "Tannins in green tea reduce iron absorption",
+                    recommendation: "Separate by 1-2 hours"
+                }
+            ],
+            // Positive interactions
+            positive: [
+                {
+                    supplements: ["vitamin_d", "vitamin_k"],
+                    description: "K2 helps direct calcium from D3 to bones, not arteries",
+                    recommendation: "Excellent combination - take together with fat"
+                },
+                {
+                    supplements: ["iron", "vitamin_c"],
+                    description: "Vitamin C dramatically increases iron absorption",
+                    recommendation: "Take iron with 100mg+ vitamin C"
+                },
+                {
+                    supplements: ["magnesium", "vitamin_d"],
+                    description: "Magnesium is needed to activate vitamin D",
+                    recommendation: "Essential combination for optimal vitamin D function"
+                },
+                {
+                    supplements: ["curcumin", "omega3"],
+                    description: "Both support anti-inflammatory pathways",
+                    recommendation: "Synergistic for reducing inflammation"
+                },
+                {
+                    supplements: ["b_complex", "magnesium"],
+                    description: "B6 enhances magnesium uptake into cells",
+                    recommendation: "Great combination for energy and nervous system"
+                }
+            ]
+        };
+
+        function addSupplementRow() {
+            const container = document.getElementById('supplementsContainer');
+            const newRow = document.createElement('div');
+            newRow.className = 'supplement-input-group';
+            
+            newRow.innerHTML = `
+                <select class="supplement-select" onchange="updateInteractions()">
+                    <option value="">Select supplement...</option>
+                    <option value="vitamin_d">Vitamin D3</option>
+                    <option value="vitamin_c">Vitamin C</option>
+                    <option value="b12">Vitamin B12</option>
+                    <option value="b_complex">B-Complex</option>
+                    <option value="iron">Iron</option>
+                    <option value="calcium">Calcium</option>
+                    <option value="magnesium">Magnesium</option>
+                    <option value="zinc">Zinc</option>
+                    <option value="omega3">Omega-3 Fish Oil</option>
+                    <option value="coq10">CoQ10</option>
+                    <option value="curcumin">Curcumin</option>
+                    <option value="probiotics">Probiotics</option>
+                    <option value="multivitamin">Multivitamin</option>
+                    <option value="ashwagandha">Ashwagandha</option>
+                    <option value="melatonin">Melatonin</option>
+                    <option value="caffeine">Caffeine/Pre-workout</option>
+                    <option value="creatine">Creatine</option>
+                    <option value="protein">Protein Powder</option>
+                    <option value="vitamin_k">Vitamin K2</option>
+                    <option value="biotin">Biotin</option>
+                    <option value="folic_acid">Folic Acid/Folate</option>
+                    <option value="green_tea">Green Tea Extract</option>
+                </select>
+                <input type="text" class="dose-input" placeholder="Dose (e.g., 1000mg)" onchange="updateInteractions()">
+                <select class="timing-select" onchange="updateInteractions()">
+                    <option value="morning">Morning</option>
+                    <option value="afternoon">Afternoon</option>
+                    <option value="evening">Evening</option>
+                    <option value="bedtime">Bedtime</option>
+                    <option value="with_meals">With meals</option>
+                    <option value="empty_stomach">Empty stomach</option>
+                </select>
+                <button class="remove-btn" onclick="removeSupplementRow(this)">Remove</button>
+            `;
+            
+            container.appendChild(newRow);
+            updateRemoveButtons();
+        }
+
+        function removeSupplementRow(button) {
+            button.closest('.supplement-input-group').remove();
+            updateRemoveButtons();
+            updateInteractions();
+        }
+
+        function updateRemoveButtons() {
+            const rows = document.querySelectorAll('.supplement-input-group');
+            rows.forEach((row, index) => {
+                const removeBtn = row.querySelector('.remove-btn');
+                removeBtn.style.display = index === 0 ? 'none' : 'block';
+            });
+        }
+
+        function getCurrentSupplements() {
+            const rows = document.querySelectorAll('.supplement-input-group');
+            const supplements = [];
+            
+            rows.forEach(row => {
+                const select = row.querySelector('.supplement-select');
+                const dose = row.querySelector('.dose-input');
+                const timing = row.querySelector('.timing-select');
+                
+                if (select.value) {
+                    supplements.push({
+                        id: select.value,
+                        name: supplementData[select.value]?.name || select.value,
+                        dose: dose.value,
+                        timing: timing.value,
+                        data: supplementData[select.value]
+                    });
+                }
+            });
+            
+            return supplements;
+        }
+
+        function checkInteractions() {
+            const supplements = getCurrentSupplements();
+            
+            if (supplements.length < 2) {
+                alert('Please add at least 2 supplements to check for interactions.');
+                return;
+            }
+            
+            const results = analyzeInteractions(supplements);
+            displayResults(results, supplements);
+            
+            document.getElementById('resultsSection').style.display = 'block';
+            document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function analyzeInteractions(supplements) {
+            const results = {
+                negative: [],
+                positive: [],
+                safetyScore: 100
+            };
+            
+            // Check for negative interactions
+            interactions.negative.forEach(interaction => {
+                const userHas = interaction.supplements.filter(sup => 
+                    supplements.some(userSup => userSup.id === sup)
+                );
+                
+                if (userHas.length === interaction.supplements.length) {
+                    results.negative.push({
+                        ...interaction,
+                        userSupplements: userHas.map(id => supplementData[id]?.name || id)
+                    });
+                    
+                    // Reduce safety score based on severity
+                    if (interaction.severity === 'high') results.safetyScore -= 25;
+                    else if (interaction.severity === 'medium') results.safetyScore -= 15;
+                    else results.safetyScore -= 5;
+                }
+            });
+            
+            // Check for positive interactions
+            interactions.positive.forEach(interaction => {
+                const userHas = interaction.supplements.filter(sup => 
+                    supplements.some(userSup => userSup.id === sup)
+                );
+                
+                if (userHas.length === interaction.supplements.length) {
+                    results.positive.push({
+                        ...interaction,
+                        userSupplements: userHas.map(id => supplementData[id]?.name || id)
+                    });
+                    
+                    // Bonus points for good combinations
+                    results.safetyScore += 5;
+                }
+            });
+            
+            results.safetyScore = Math.max(30, Math.min(100, results.safetyScore));
+            return results;
+        }
+
+        function displayResults(results, supplements) {
+            const container = document.getElementById('interactionResults');
+            container.innerHTML = '';
+            
+            // Display negative interactions
+            if (results.negative.length > 0) {
+                results.negative.forEach(interaction => {
+                    const card = createResultCard(interaction, 'warning');
+                    container.appendChild(card);
+                });
+            }
+            
+            // Display positive interactions
+            if (results.positive.length > 0) {
+                results.positive.forEach(interaction => {
+                    const card = createResultCard(interaction, 'safe');
+                    container.appendChild(card);
+                });
+            }
+            
+            // If no interactions found
+            if (results.negative.length === 0 && results.positive.length === 0) {
+                const card = document.createElement('div');
+                card.className = 'result-card result-caution';
+                card.innerHTML = `
+                    <div class="result-title">
+                        <span class="result-icon">ℹ️</span>
+                        No Major Interactions Detected
+                    </div>
+                    <div class="result-description">
+                        Your current supplement combination doesn't show any major known interactions in our database. However, consider optimal timing and absorption factors for best results.
+                    </div>
+                `;
+                container.appendChild(card);
+            }
+            
+            updateSummary(results, supplements);
+        }
+
+        function createResultCard(interaction, type) {
+            const card = document.createElement('div');
+            let iconMap = {
+                'safe': '✅',
+                'caution': '⚠️',  
+                'warning': '❌'
+            };
+            
+            if (interaction.severity === 'high') type = 'warning';
+            else if (interaction.severity === 'medium') type = 'caution';
+            else if (interaction.supplements) type = 'safe'; // positive interaction
+            
+            card.className = `result-card result-${type}`;
+            
+            const title = interaction.userSupplements ? 
+                interaction.userSupplements.join(' + ') : 
+                interaction.supplements.map(s => supplementData[s]?.name || s).join(' + ');
+            
+            card.innerHTML = `
+                <div class="result-title">
+                    <span class="result-icon">${iconMap[type]}</span>
+                    ${title}
+                </div>
+                <div class="result-description">
+                    ${interaction.description}
+                </div>
+                <div class="recommendations">
+                    <h4>💡 Recommendation:</h4>
+                    <p>${interaction.recommendation}</p>
+                </div>
+            `;
+            
+            return card;
+        }
+
+        function updateSummary(results, supplements) {
+            const scoreElement = document.getElementById('safetyScore');
+            const descElement = document.getElementById('scoreDescription');
+            
+            scoreElement.textContent = results.safetyScore;
+            
+            let description = '';
+            if (results.safetyScore >= 85) {
+                description = 'Excellent! Your supplement stack is well-optimized with great synergistic combinations.';
+            } else if (results.safetyScore >= 70) {
+                description = 'Good foundation with room for optimization. Consider timing adjustments.';
+            } else if (results.safetyScore >= 50) {
+                description = 'Some concerning interactions detected. Review timing and combinations.';
+            } else {
+                description = 'Multiple significant interactions found. Consider consulting with a healthcare provider.';
+            }
+            
+            descElement.textContent = description;
+            
+            generateTimingSchedule(supplements);
+        }
+
+        function generateTimingSchedule(supplements) {
+            const schedule = {
+                'Morning (Empty)': [],
+                'Morning (With Food)': [],
+                'Afternoon': [],
+                'Evening (With Food)': [],
+                'Before Bed': []
+            };
+            
+            supplements.forEach(supp => {
+                const data = supp.data;
+                const userTiming = supp.timing;
+                
+                // Optimal timing based on supplement properties
+                let optimalTime = 'Morning (With Food)'; // default
+                
+                if (data) {
+                    if (data.absorption === 'empty_stomach') optimalTime = 'Morning (Empty)';
+                    else if (data.absorption === 'evening') optimalTime = 'Evening (With Food)';
+                    else if (data.absorption === 'bedtime') optimalTime = 'Before Bed';
+                    else if (data.absorption === 'with_fat') optimalTime = 'Morning (With Food)';
+                }
+                
+                // Special cases
+                if (supp.id === 'melatonin') optimalTime = 'Before Bed';
+                if (supp.id === 'caffeine') optimalTime = 'Morning (Empty)';
+                if (supp.id === 'magnesium') optimalTime = 'Evening (With Food)';
+                
+                schedule[optimalTime].push(`${supp.name} (${supp.dose || 'as directed'})`);
+            });
+            
+            const container = document.getElementById('timingSchedule');
+            container.innerHTML = '';
+            
+            Object.entries(schedule).forEach(([time, supps]) => {
+                if (supps.length > 0) {
+                    const timeSlot = document.createElement('div');
+                    timeSlot.className = 'time-slot';
+                    timeSlot.innerHTML = `
+                        <div class="time-label">${time}</div>
+                        <div class="supplements-list">${supps.join(', ')}</div>
+                    `;
+                    container.appendChild(timeSlot);
+                }
+            });
+        }
+
+        function updateInteractions() {
+            // Real-time updates could be added here
+        }
+
+        // Handle signup
+        document.getElementById('signupForm').onsubmit = function(e) {
+            e.preventDefault();
+            const email = document.getElementById('emailInput').value;
+            
+            alert('Thanks for your interest in Wuksy! You\'ll receive your 50% discount code and early access notification soon.');
+            
+            this.reset();
+        }
+    </script>
+</body>
+</html>

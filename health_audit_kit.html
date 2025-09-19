@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health Data Audit Kit - Wuksy</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+            padding: 40px 30px;
+            text-align: center;
+            color: white;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 40px 30px;
+        }
+        
+        .audit-section {
+            margin-bottom: 40px;
+            padding: 30px;
+            border: 2px solid #f0f0f0;
+            border-radius: 15px;
+            transition: all 0.3s;
+        }
+        
+        .audit-section:hover {
+            border-color: #ff9a9e;
+            box-shadow: 0 5px 15px rgba(255, 154, 158, 0.1);
+        }
+        
+        .section-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        
+        .section-icon {
+            font-size: 2rem;
+            margin-right: 15px;
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #333;
+        }
+        
+        .question-group {
+            margin-bottom: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        
+        .question {
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #555;
+        }
+        
+        .options {
+            display: grid;
+            gap: 10px;
+        }
+        
+        .option {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .option:hover {
+            border-color: #ff9a9e;
+            background: #fff5f5;
+        }
+        
+        .option input[type="radio"] {
+            margin-right: 12px;
+        }
+        
+        .option.selected {
+            border-color: #ff9a9e;
+            background: #fff5f5;
+        }
+        
+        .text-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        
+        .text-input:focus {
+            outline: none;
+            border-color: #ff9a9e;
+        }
+        
+        .calculate-btn {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+            color: white;
+            border: none;
+            padding: 20px 40px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: transform 0.3s;
+            display: block;
+            margin: 40px auto;
+            min-width: 200px;
+        }
+        
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .results-container {
+            display: none;
+            margin-top: 40px;
+            padding: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            color: white;
+        }
+        
+        .score-display {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .score-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+        
+        .recommendations {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .recommendation-card {
+            background: rgba(255,255,255,0.1);
+            padding: 25px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .recommendation-card h3 {
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+        
+        .recommendation-card ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .recommendation-card li {
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .recommendation-card li:before {
+            content: "✓";
+            color: #4ade80;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        
+        .cta-section {
+            background: #1a1a1a;
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+        
+        .cta-section h2 {
+            margin-bottom: 15px;
+            font-size: 1.8rem;
+        }
+        
+        .cta-section p {
+            margin-bottom: 25px;
+            opacity: 0.9;
+        }
+        
+        .signup-form {
+            display: flex;
+            gap: 10px;
+            max-width: 400px;
+            margin: 0 auto;
+            flex-wrap: wrap;
+        }
+        
+        .signup-form input {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        
+        .signup-btn {
+            background: #ff9a9e;
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+        
+        .signup-btn:hover {
+            background: #ff8a8e;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .content {
+                padding: 20px 15px;
+            }
+            
+            .audit-section {
+                padding: 20px 15px;
+            }
+            
+            .recommendations {
+                grid-template-columns: 1fr;
+            }
+            
+            .signup-form {
+                flex-direction: column;
+            }
+            
+            .signup-form input {
+                margin-bottom: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 Health Data Audit</h1>
+            <p>Discover the 5 critical health tracking mistakes that could be sabotaging your wellness goals</p>
+        </div>
+        
+        <div class="content">
+            <div class="audit-section">
+                <div class="section-header">
+                    <span class="section-icon">📈</span>
+                    <h2 class="section-title">Current Health Tracking</h2>
+                </div>
+                
+                <div class="question-group">
+                    <div class="question">How do you currently track your health metrics?</div>
+                    <div class="options">
+                        <div class="option" onclick="selectOption(this, 'tracking', 1)">
+                            <input type="radio" name="tracking" value="1">
+                            <label>I don't track anything consistently</label>
+                        </div>
+                        <div class="option" onclick="selectOption(this, 'tracking', 2)">
+                            <input type="radio" name="tracking" value="2">
+                            <label>I use a fitness app occasionally</label>
+                        </div>
+                        <div class="option" onclick="selectOption(this, 'tracking', 3)">
+                            <input type="radio" name="tracking" value="3">
+                            <label>I track some metrics like weight or steps</label>
+                        </div>
+                        <div class="option" onclick="selectOption(this, 'tracking', 4)">
+                            <input type="radio" name="tracking" value="4">
+                            <label>I have a comprehensive health tracking system</label>
+                        </div>
+                        <div class="option" onclick="selectOption(this, 'tracking', 5)">
+                            <input type="radio" name="tracking" value="5">
+                            <label>I professionally monitor multiple biomarkers</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="question-group">
+                    <div class="question">How often do you get blood work done?</div>
+                    <div class="options">
+                        <div class="option" onclick="selectOption(this, 'bloodwork', 1)">
+                            <input type="radio" name="bloodwork" value="1">
+                            <label>Only when I'm sick or as required</label>
+                        </div>
+                        <div class="option" onclick="selectOption(this, 'bloodwork', 2)">
+                            <input type="radio" name="bloodwork" value="2">
+                            <label>Every few years during checkups</label>
+                        </div>
+                        <div class="option" onclick="selectOption(this, 'bloodwork', 3)">
+                            <input type="radio" name="bloodwork" value="3">
+                            <label>Annually for basic panels</label>
+                        </div>
+                        <div class="option" onclick="selectOption(this, 'bloodwork', 4)">
+                            <input type="radio" name="bloodwork" value="4">
+                            <label>Every 6 months with comprehensive panels</label>
+                        </div>
+                        <div class="option" onclick="selectOption(this, 'bloodwork', 5)">
+                            <input type="radio" name="bloodwork" value="5">
+                            <label>Quarterly with advanced biomarker tracking</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="audit-section">
+                <div class="section-header">
+                    <span class="section-icon">🔍</span>
+                    <h2 class="section-title">Data Analysis & Understanding</h2>
+                </div>
+                
+                <div class="question-group">
+                    <div class="question">How well do you understand your health data?</div>
+                    <div class="options">
+                        <div class="option" onclick="selectOption(this, 'understanding', 1)">
+                            <input type="radio" name="understanding" value="1">
+                            <label>I just look at whether results are "normal"</label>
+                        </div>
+                        <div class="option" onclick="selectOption(this, 'understanding', 2)">
+                            <input type="radio" name="understanding" value="2">
+                            <label>I Google results but often get confused</label>
+                        </div>
+                        <div class="option" onclick="selectOption(this, 'understanding', 3)">
+                            <input type="radio" name="understanding" value="3">
+                            <label>I understand basic markers and trends</label>
+                        </div>
+                        <div class="option" onclick="selectOption(this, 'understanding', 4)">
+                            <input type="radio" name="understanding" value="4">
+                            <label>I can interpret most results and spot patterns</label>
+                        </div>
+                        <div class="option" onclick="selectOption(this, 'understanding', 5)">
+                            <input type="radio" name="understanding" value="5">
+                            <label>I have advanced knowledge of biomarker optimization</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="question-group">
+                    <div class="question">What do you do with your health data?</div>
+                    <div class="options">
+                        <div class="option" onclick="selectOption(this, 'action', 1)">
+                            <input type="radio" name="action" value="1">
+                            <label>File it away and forget about it</label>
+                        </div>
+                        <div class="option" onclick="selectOption(this, 'action', 2)">
+                            <input type="radio" name="action" value="2">
+                            <label>Worry if something looks abnormal</label>
+                        </div>
+                        <div class="option" onclick="selectOption(this, 'action', 3)">
+                            <input type="radio" name="action" value="3">
+                            <label>Make some general lifestyle adjustments</label>
+                        </div>
+                        <div class="option" onclick="selectOption(this, 'action', 4)">
+                            <input type="radio" name="action" value="4">
+                            <label>Create targeted action plans for improvement</label>
+                        </div>
+                        <div class="option" onclick="selectOption(this, 'action', 5)">
+                            <input type="radio" name="action" value="5">
+                            <label>Use it to optimize my entire health protocol</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="audit-section">
+                <div class="section-header">
+                    <span class="section-icon">🎯</span>
+                    <h2 class="section-title">Goal Setting & Progress Tracking</h2>
+                </div>
+                
+                <div class="question-group">
+                    <div class="question">How do you set and track health goals?</div>
+                    <div class="options">
+                        <div class="option" onclick="selectOption(this, 'goals', 1)">
+                            <input type="radio" name="goals" value="1">
+                            <label>I don't really set specific health goals</label>
+                        </div>
+                        <div class="option" onclick="selectOption(this, 'goals', 2)">
+                            <input type="radio" name="goals" value="2">
+                            <label>I have vague goals like "be healthier"</label>
+                        </div>
+                        <div class="option" onclick="selectOption(this, 'goals', 3)">
+                            <input type="radio" name="goals" value="3">
+                            <label>I set specific goals but struggle to track progress</label>
+                        </div>
+                        <div class="option" onclick="selectOption(this, 'goals', 4)">
+                            <input type="radio" name="goals" value="4">
+                            <label>I have measurable goals and track most of them</label>
+                        </div>
+                        <div class="option" onclick="selectOption(this, 'goals', 5)">
+                            <input type="radio" name="goals" value="5">
+                            <label>I have SMART goals with systematic tracking</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="question-group">
+                    <div class="question">How often do you review and adjust your health strategies?</div>
+                    <div class="options">
+                        <div class="option" onclick="selectOption(this, 'review', 1)">
+                            <input type="radio" name="review" value="1">
+                            <label>Rarely or never</label>
+                        </div>
+                        <div class="option" onclick="selectOption(this, 'review', 2)">
+                            <input type="radio" name="review" value="2">
+                            <label>When something goes wrong</label>
+                        </div>
+                        <div class="option" onclick="selectOption(this, 'review', 3)">
+                            <input type="radio" name="review" value="3">
+                            <label>A few times per year</label>
+                        </div>
+                        <div class="option" onclick="selectOption(this, 'review', 4)">
+                            <input type="radio" name="review" value="4">
+                            <label>Monthly reviews and adjustments</label>
+                        </div>
+                        <div class="option" onclick="selectOption(this, 'review', 5)">
+                            <input type="radio" name="review" value="5">
+                            <label>Weekly or bi-weekly optimization cycles</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="audit-section">
+                <div class="section-header">
+                    <span class="section-icon">🔬</span>
+                    <h2 class="section-title">Personalization & Data Integration</h2>
+                </div>
+                
+                <div class="question-group">
+                    <div class="question">How personalized is your current health approach?</div>
+                    <div class="options">
+                        <div class="option" onclick="selectOption(this, 'personalization', 1)">
+                            <input type="radio" name="personalization" value="1">
+                            <label>I follow generic advice from the internet</label>
+                        </div>
+                        <div class="option" onclick="selectOption(this, 'personalization', 2)">
+                            <input type="radio" name="personalization" value="2">
+                            <label>I try different approaches to see what works</label>
+                        </div>
+                        <div class="option" onclick="selectOption(this, 'personalization', 3)">
+                            <input type="radio" name="personalization" value="3">
+                            <label>I customize based on my symptoms and preferences</label>
+                        </div>
+                        <div class="option" onclick="selectOption(this, 'personalization', 4)">
+                            <input type="radio" name="personalization" value="4">
+                            <label>I use data to guide personalized decisions</label>
+                        </div>
+                        <div class="option" onclick="selectOption(this, 'personalization', 5)">
+                            <input type="radio" name="personalization" value="5">
+                            <label>Everything is based on my unique biomarker profile</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="question-group">
+                    <div class="question">What's your biggest frustration with health tracking?</div>
+                    <div class="options">
+                        <div class="option" onclick="selectOption(this, 'frustration', 1)">
+                            <input type="radio" name="frustration" value="1">
+                            <label>I don't know what to track</label>
+                        </div>
+                        <div class="option" onclick="selectOption(this, 'frustration', 2)">
+                            <input type="radio" name="frustration" value="2">
+                            <label>Too much data, no clear insights</label>
+                        </div>
+                        <div class="option" onclick="selectOption(this, 'frustration', 3)">
+                            <input type="radio" name="frustration" value="3">
+                            <label>Hard to stay consistent with tracking</label>
+                        </div>
+                        <div class="option" onclick="selectOption(this, 'frustration', 4)">
+                            <input type="radio" name="frustration" value="4">
+                            <label>Can't translate data into actionable steps</label>
+                        </div>
+                        <div class="option" onclick="selectOption(this, 'frustration', 5)">
+                            <input type="radio" name="frustration" value="5">
+                            <label>Limited personalization and integration</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button type="button" class="calculate-btn" onclick="calculateAuditScore()">
+                📊 Analyze My Health Data Approach
+            </button>
+
+            <div class="results-container" id="resultsContainer">
+                <div class="score-display">
+                    <div class="score-circle" id="scoreCircle">75</div>
+                    <h2 id="scoreTitle">Your Health Data Score</h2>
+                    <p id="scoreDescription">Based on your responses, here's how you're managing your health data</p>
+                </div>
+                
+                <div class="recommendations" id="recommendations">
+                    <!-- Dynamic recommendations will be inserted here -->
+                </div>
+            </div>
+        </div>
+        
+        <div class="cta-section">
+            <h2>🚀 Ready to Master Your Health Data?</h2>
+            <p>Join the first 100 people to get AI-powered health insights when Wuksy launches</p>
+            <p><strong>Exclusive Bonus: Free health data organization template + personalized action plan</strong></p>
+            
+            <form class="signup-form" id="signupForm">
+                <input type="email" placeholder="Enter your email address" required id="emailInput">
+                <button type="submit" class="signup-btn">Get Early Access</button>
+            </form>
+            
+            <p style="margin-top: 15px; font-size: 0.9rem; opacity: 0.7;">
+                🔒 Your information is secure. Join 2,847 health optimization enthusiasts.
+            </p>
+        </div>
+    </div>
+
+    <script>
+        function selectOption(element, name, value) {
+            // Remove selected class from all options in this group
+            const options = element.parentElement.querySelectorAll('.option');
+            options.forEach(opt => opt.classList.remove('selected'));
+            
+            // Add selected class to clicked option
+            element.classList.add('selected');
+            
+            // Check the radio button
+            const radio = element.querySelector('input[type="radio"]');
+            radio.checked = true;
+        }
+
+        function calculateAuditScore() {
+            const formData = new FormData();
+            const radios = document.querySelectorAll('input[type="radio"]:checked');
+            
+            if (radios.length < 8) {
+                alert('Please answer all questions to get your complete health data audit.');
+                return;
+            }
+            
+            let totalScore = 0;
+            radios.forEach(radio => {
+                totalScore += parseInt(radio.value);
+            });
+            
+            const averageScore = Math.round((totalScore / 8) * 20);
+            
+            displayResults(averageScore, radios);
+        }
+
+        function displayResults(score, responses) {
+            document.getElementById('scoreCircle').textContent = score;
+            
+            let category, description, recommendations;
+            
+            if (score >= 85) {
+                category = "Health Data Master";
+                description = "Outstanding! You're already using advanced health tracking strategies. You understand the value of personalized, data-driven health optimization.";
+                recommendations = [
+                    {
+                        title: "🎯 Advanced Optimization",
+                        items: [
+                            "Explore cutting-edge biomarkers like ApoB, Lp(a)",
+                            "Implement predictive health modeling",
+                            "Consider genetic testing integration",
+                            "Track environmental health factors"
+                        ]
+                    },
+                    {
+                        title: "🚀 Next Level Strategies",
+                        items: [
+                            "Become a beta tester for new health technologies",
+                            "Share your expertise with others",
+                            "Explore personalized supplementation",
+                            "Consider health coaching or consultation"
+                        ]
+                    }
+                ];
+            } else if (score >= 65) {
+                category = "Data-Driven Optimizer";
+                description = "Great work! You have solid health tracking habits and understand the importance of data. With some optimization, you could achieve remarkable results.";
+                recommendations = [
+                    {
+                        title: "📈 Optimization Opportunities",
+                        items: [
+                            "Expand beyond basic biomarkers",
+                            "Implement more frequent review cycles",
+                            "Create action plans from your data",
+                            "Track trends, not just point-in-time values"
+                        ]
+                    },
+                    {
+                        title: "🔧 System Improvements",
+                        items: [
+                            "Standardize your tracking methods",
+                            "Set up automated reminders",
+                            "Create a health data dashboard",
+                            "Learn advanced interpretation techniques"
+                        ]
+                    }
+                ];
+            } else if (score >= 45) {
+                category = "Developing Tracker";
+                description = "You're on the right path! You understand the value of health tracking but there's significant room for improvement in your approach and consistency.";
+                recommendations = [
+                    {
+                        title: "🏗️ Foundation Building",
+                        items: [
+                            "Start with annual comprehensive blood panels",
+                            "Choose 3-5 key metrics to track consistently",
+                            "Learn to interpret basic biomarkers",
+                            "Set specific, measurable health goals"
+                        ]
+                    },
+                    {
+                        title: "📚 Knowledge Building",
+                        items: [
+                            "Read about optimal vs. normal ranges",
+                            "Understand biomarker relationships",
+                            "Learn about supplement and lifestyle interventions",
+                            "Find reliable health information sources"
+                        ]
+                    }
+                ];
+            } else {
+                category = "Health Data Beginner";
+                description = "You have tremendous opportunity ahead! Building a systematic approach to health tracking could be transformational for your wellness journey.";
+                recommendations = [
+                    {
+                        title: "🚀 Getting Started",
+                        items: [
+                            "Schedule a comprehensive health assessment",
+                            "Start tracking one metric consistently",
+                            "Learn the basics of reading blood work",
+                            "Set one specific health improvement goal"
+                        ]
+                    },
+                    {
+                        title: "💡 Simple Steps",
+                        items: [
+                            "Use a health app to track daily metrics",
+                            "Get annual blood work with extended panels",
+                            "Keep a health journal for symptoms",
+                            "Find a healthcare provider who explains results"
+                        ]
+                    }
+                ];
+            }
+            
+            document.getElementById('scoreTitle').textContent = `${category}: ${score}/100`;
+            document.getElementById('scoreDescription').textContent = description;
+            
+            const recommendationsContainer = document.getElementById('recommendations');
+            recommendationsContainer.innerHTML = '';
+            
+            recommendations.forEach(rec => {
+                const card = document.createElement('div');
+                card.className = 'recommendation-card';
+                
+                const title = document.createElement('h3');
+                title.textContent = rec.title;
+                card.appendChild(title);
+                
+                const list = document.createElement('ul');
+                rec.items.forEach(item => {
+                    const listItem = document.createElement('li');
+                    listItem.textContent = item;
+                    list.appendChild(listItem);
+                });
+                card.appendChild(list);
+                
+                recommendationsContainer.appendChild(card);
+            });
+            
+            document.getElementById('resultsContainer').style.display = 'block';
+            document.getElementById('resultsContainer').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Handle signup
+        document.getElementById('signupForm').onsubmit = function(e) {
+            e.preventDefault();
+            const email = document.getElementById('emailInput').value;
+            
+            alert('Welcome to our VIP early access list! You\'ll receive your personalized health data template and exclusive Wuksy updates soon.');
+            
+            this.reset();
+        }
+    </script>
+</body>
+</html>

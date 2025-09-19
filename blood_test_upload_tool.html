@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Blood Test Analyzer - Wuksy</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            padding: 40px 30px;
+            text-align: center;
+            color: white;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+        
+        .benefits {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .benefit {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+        
+        .benefit-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        
+        .content {
+            padding: 40px 30px;
+        }
+        
+        .upload-section {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+        
+        .upload-zone {
+            border: 3px dashed rgba(255,255,255,0.5);
+            border-radius: 12px;
+            padding: 60px 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 30px 0;
+        }
+        
+        .upload-zone:hover {
+            border-color: white;
+            background: rgba(255,255,255,0.1);
+        }
+        
+        .upload-zone.dragover {
+            border-color: white;
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .upload-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+        
+        .upload-text {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+        }
+        
+        .upload-subtext {
+            opacity: 0.8;
+            font-size: 0.9rem;
+        }
+        
+        .file-input {
+            display: none;
+        }
+        
+        .upload-btn {
+            background: white;
+            color: #f5576c;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+            font-size: 1.1rem;
+        }
+        
+        .upload-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .form-section {
+            display: none;
+            margin-top: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #4facfe;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .symptoms-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .symptom-checkbox {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .symptom-checkbox:hover {
+            background: #e9ecef;
+        }
+        
+        .symptom-checkbox input {
+            margin-right: 10px;
+            width: auto;
+        }
+        
+        .analyze-btn {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            border: none;
+            padding: 20px 40px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: transform 0.3s;
+            display: block;
+            margin: 30px auto;
+        }
+        
+        .analyze-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .loading-section {
+            display: none;
+            text-align: center;
+            padding: 60px 20px;
+        }
+        
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 6px solid #f3f3f3;
+            border-top: 6px solid #4facfe;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 30px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .results-section {
+            display: none;
+            margin-top: 40px;
+        }
+        
+        .results-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .results-score {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        
+        .result-card {
+            background: white;
+            border: 2px solid #f0f0f0;
+            border-radius: 15px;
+            padding: 30px;
+            transition: all 0.3s;
+        }
+        
+        .result-card:hover {
+            border-color: #4facfe;
+            box-shadow: 0 5px 15px rgba(79, 172, 254, 0.1);
+        }
+        
+        .card-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+        
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #333;
+        }
+        
+        .card-content ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .card-content li {
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .card-content li:before {
+            content: "✓";
+            color: #4facfe;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        
+        .priority-high {
+            border-left: 4px solid #e74c3c;
+        }
+        
+        .priority-medium {
+            border-left: 4px solid #f39c12;
+        }
+        
+        .priority-low {
+            border-left: 4px solid #27ae60;
+        }
+        
+        .cta-section {
+            background: #1a1a1a;
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+        
+        .cta-section h2 {
+            margin-bottom: 15px;
+            font-size: 1.8rem;
+        }
+        
+        .cta-section p {
+            margin-bottom: 25px;
+            opacity: 0.9;
+        }
+        
+        .signup-form {
+            display: flex;
+            gap: 10px;
+            max-width: 400px;
+            margin: 0 auto;
+            flex-wrap: wrap;
+        }
+        
+        .signup-form input {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        
+        .signup-btn {
+            background: #4facfe;
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+        
+        .signup-btn:hover {
+            background: #2196f3;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .content {
+                padding: 20px 15px;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .signup-form {
+                flex-direction: column;
+            }
+            
+            .signup-form input {
+                margin-bottom: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧬 AI Blood Test Analyzer</h1>
+            <p>Upload your blood test results and get a personalized wellness plan in minutes</p>
+            
+            <div class="benefits">
+                <div class="benefit">
+                    <div class="benefit-icon">⚡</div>
+                    <div>Instant Analysis</div>
+                </div>
+                <div class="benefit">
+                    <div class="benefit-icon">🎯</div>
+                    <div>Personalized Plan</div>
+                </div>
+                <div class="benefit">
+                    <div class="benefit-icon">🔬</div>
+                    <div>40+ Biomarkers</div>
+                </div>
+                <div class="benefit">
+                    <div class="benefit-icon">📈</div>
+                    <div>Actionable Insights</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="content">
+            <div class="upload-section">
+                <h2>Step 1: Upload Your Blood Test Results</h2>
+                <p>Supported formats: PDF, JPG, PNG (from any lab or clinic)</p>
+                
+                <div class="upload-zone" id="uploadZone">
+                    <div class="upload-icon">📄</div>
+                    <div class="upload-text">Drag & Drop Your Blood Test Here</div>
+                    <div class="upload-subtext">or click to browse files</div>
+                    <button class="upload-btn" onclick="document.getElementById('fileInput').click()">
+                        Choose File
+                    </button>
+                </div>
+                
+                <input type="file" id="fileInput" class="file-input" accept=".pdf,.jpg,.jpeg,.png" multiple>
+                
+                <div style="margin-top: 20px; font-size: 0.9rem; opacity: 0.8;">
+                    🔒 Your data is encrypted and secure. We never share your personal health information.
+                </div>
+            </div>
+            
+            <div class="form-section" id="formSection">
+                <h2 style="margin-bottom: 30px; color: #333;">Step 2: Tell Us About Yourself</h2>
+                
+                <form id="analysisForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="age">Age</label>
+                            <input type="number" id="age" min="18" max="100" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="gender">Gender</label>
+                            <select id="gender" required>
+                                <option value="">Select gender</option>
+                                <option value="male">Male</option>
+                                <option value="female">Female</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="activity">Activity Level</label>
+                            <select id="activity" required>
+                                <option value="">Select activity level</option>
+                                <option value="sedentary">Sedentary (little/no exercise)</option>
+                                <option value="light">Light (1-3 days/week)</option>
+                                <option value="moderate">Moderate (3-5 days/week)</option>
+                                <option value="very_active">Very Active (6-7 days/week)</option>
+                                <option value="extremely_active">Extremely Active (2x/day or intense training)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="diet">Diet Type</label>
+                            <select id="diet" required>
+                                <option value="">Select diet type</option>
+                                <option value="omnivore">Omnivore (everything)</option>
+                                <option value="vegetarian">Vegetarian</option>
+                                <option value="vegan">Vegan</option>
+                                <option value="keto">Ketogenic</option>
+                                <option value="paleo">Paleo</option>
+                                <option value="mediterranean">Mediterranean</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="goals">Primary Health Goals (select all that apply)</label>
+                        <div class="symptoms-grid">
+                            <div class="symptom-checkbox">
+                                <input type="checkbox" id="goal_energy" value="energy">
+                                <label for="goal_energy">Increase Energy</label>
+                            </div>
+                            <div class="symptom-checkbox">
+                                <input type="checkbox" id="goal_weight" value="weight">
+                                <label for="goal_weight">Weight Management</label>
+                            </div>
+                            <div class="symptom-checkbox">
+                                <input type="checkbox" id="goal_sleep" value="sleep">
+                                <label for="goal_sleep">Better Sleep</label>
+                            </div>
+                            <div class="symptom-checkbox">
+                                <input type="checkbox" id="goal_mood" value="mood">
+                                <label for="goal_mood">Improve Mood</label>
+                            </div>
+                            <div class="symptom-checkbox">
+                                <input type="checkbox" id="goal_performance" value="performance">
+                                <label for="goal_performance">Athletic Performance</label>
+                            </div>
+                            <div class="symptom-checkbox">
+                                <input type="checkbox" id="goal_longevity" value="longevity">
+                                <label for="goal_longevity">Longevity & Anti-aging</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="symptoms">Current Symptoms or Concerns</label>
+                        <div class="symptoms-grid">
+                            <div class="symptom-checkbox">
+                                <input type="checkbox" id="symptom_fatigue" value="fatigue">
+                                <label for="symptom_fatigue">Chronic Fatigue</label>
+                            </div>
+                            <div class="symptom-checkbox">
+                                <input type="checkbox" id="symptom_brain_fog" value="brain_fog">
+                                <label for="symptom_brain_fog">Brain Fog</label>
+                            </div>
+                            <div class="symptom-checkbox">
+                                <input type="checkbox" id="symptom_anxiety" value="anxiety">
+                                <label for="symptom_anxiety">Anxiety/Stress</label>
+                            </div>
+                            <div class="symptom-checkbox">
+                                <input type="checkbox" id="symptom_insomnia" value="insomnia">
+                                <label for="symptom_insomnia">Sleep Issues</label>
+                            </div>
+                            <div class="symptom-checkbox">
+                                <input type="checkbox" id="symptom_digestive" value="digestive">
+                                <label for="symptom_digestive">Digestive Problems</label>
+                            </div>
+                            <div class="symptom-checkbox">
+                                <input type="checkbox" id="symptom_joint_pain" value="joint_pain">
+                                <label for="symptom_joint_pain">Joint Pain</label>
+                            </div>
+                            <div class="symptom-checkbox">
+                                <input type="checkbox" id="symptom_hair_loss" value="hair_loss">
+                                <label for="symptom_hair_loss">Hair Loss</label>
+                            </div>
+                            <div class="symptom-checkbox">
+                                <input type="checkbox" id="symptom_cold_hands" value="cold_hands">
+                                <label for="symptom_cold_hands">Cold Hands/Feet</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="supplements">Current Supplements (optional)</label>
+                        <textarea id="supplements" rows="3" placeholder="List any vitamins, supplements, or medications you're currently taking..."></textarea>
+                    </div>
+                    
+                    <button type="button" class="analyze-btn" onclick="analyzeBloodTest()">
+                        🧠 Generate My Personalized Wellness Plan
+                    </button>
+                </form>
+            </div>
+            
+            <div class="loading-section" id="loadingSection">
+                <div class="spinner"></div>
+                <h2>Analyzing Your Blood Work...</h2>
+                <p>Our AI is processing 40+ biomarkers to create your personalized recommendations</p>
+                <div style="margin-top: 20px; opacity: 0.7;">
+                    ⚡ Analyzing metabolic markers...<br>
+                    🔬 Checking nutritional deficiencies...<br>
+                    🎯 Creating personalized protocols...
+                </div>
+            </div>
+            
+            <div class="results-section" id="resultsSection">
+                <div class="results-header">
+                    <div class="results-score" id="healthScore">78</div>
+                    <h2>Your Personalized Wellness Score</h2>
+                    <p>Based on AI analysis of your blood biomarkers and health profile</p>
+                </div>
+                
+                <div class="results-grid" id="resultsGrid">
+                    <!-- Dynamic results will be inserted here -->
+                </div>
+            </div>
+        </div>
+        
+        <div class="cta-section">
+            <h2>🚀 Want the Full Wuksy Experience?</h2>
+            <p>This free analysis is just the beginning. Get complete biomarker optimization with our AI platform.</p>
+            <p><strong>Join our VIP list for 50% off when we launch + monthly progress tracking</strong></p>
+            
+            <form class="signup-form" id="signupForm">
+                <input type="email" placeholder="Enter your email address" required id="emailInput">
+                <button type="submit" class="signup-btn">Get VIP Access</button>
+            </form>
+            
+            <p style="margin-top: 15px; font-size: 0.9rem; opacity: 0.7;">
+                🔒 Your data is secure. Join 2,847+ health optimizers.
+            </p>
+        </div>
+    </div>
+
+    <script>
+        let uploadedFiles = [];
+
+        // File upload handling
+        document.getElementById('fileInput').addEventListener('change', handleFileSelect);
+        
+        const uploadZone = document.getElementById('uploadZone');
+        uploadZone.addEventListener('click', () => document.getElementById('fileInput').click());
+        uploadZone.addEventListener('dragover', handleDragOver);
+        uploadZone.addEventListener('drop', handleDrop);
+        uploadZone.addEventListener('dragenter', (e) => {
+            e.preventDefault();
+            uploadZone.classList.add('dragover');
+        });
+        uploadZone.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            uploadZone.classList.remove('dragover');
+        });
+
+        function handleDragOver(e) {
+            e.preventDefault();
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            uploadZone.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            handleFiles(files);
+        }
+
+        function handleFileSelect(e) {
+            const files = e.target.files;
+            handleFiles(files);
+        }
+
+        function handleFiles(files) {
+            if (files.length > 0) {
+                uploadedFiles = Array.from(files);
+                updateUploadZone();
+                showFormSection();
+            }
+        }
+
+        function updateUploadZone() {
+            const uploadZone = document.getElementById('uploadZone');
+            uploadZone.innerHTML = `
+                <div class="upload-icon">✅</div>
+                <div class="upload-text">${uploadedFiles.length} File(s) Uploaded Successfully</div>
+                <div class="upload-subtext">
+                    ${uploadedFiles.map(file => file.name).join(', ')}
+                </div>
+                <button class="upload-btn" onclick="document.getElementById('fileInput').click()">
+                    Upload Different Files
+                </button>
+            `;
+        }
+
+        function showFormSection() {
+            document.getElementById('formSection').style.display = 'block';
+            document.getElementById('formSection').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function analyzeBloodTest() {
+            // Validate form
+            const form = document.getElementById('analysisForm');
+            const formData = new FormData(form);
+            
+            const age = formData.get('age');
+            const gender = formData.get('gender');
+            const activity = formData.get('activity');
+            const diet = formData.get('diet');
+            
+            if (!age || !gender || !activity || !diet) {
+                alert('Please fill in all required fields to generate your analysis.');
+                return;
+            }
+            
+            if (uploadedFiles.length === 0) {
+                alert('Please upload your blood test results first.');
+                return;
+            }
+            
+            // Show loading
+            document.getElementById('loadingSection').style.display = 'block';
+            document.getElementById('loadingSection').scrollIntoView({ behavior: 'smooth' });
+            
+            // Simulate analysis time
+            setTimeout(() => {
+                generateResults(formData);
+            }, 4000);
+        }
+
+        function generateResults(formData) {
+            // Hide loading, show results
+            document.getElementById('loadingSection').style.display = 'none';
+            
+            // Generate personalized results based on form data
+            const age = parseInt(formData.get('age'));
+            const gender = formData.get('gender');
+            const activity = formData.get('activity');
+            
+            // Calculate health score based on age and activity
+            let baseScore = 85;
+            if (age > 50) baseScore -= 5;
+            if (age > 65) baseScore -= 10;
+            if (activity === 'sedentary') baseScore -= 15;
+            if (activity === 'light') baseScore -= 8;
+            if (activity === 'very_active') baseScore += 5;
+            
+            const healthScore = Math.max(45, Math.min(95, baseScore + Math.floor(Math.random() * 10) - 5));
+            
+            document.getElementById('healthScore').textContent = healthScore;
+            
+            // Generate recommendations based on common deficiencies and user profile
+            const recommendations = generatePersonalizedRecommendations(formData, healthScore);
+            
+            const resultsGrid = document.getElementById('resultsGrid');
+            resultsGrid.innerHTML = '';
+            
+            recommendations.forEach(rec => {
+                const card = document.createElement('div');
+                card.className = `result-card priority-${rec.priority}`;
+                
+                card.innerHTML = `
+                    <div class="card-icon">${rec.icon}</div>
+                    <div class="card-title">${rec.title}</div>
+                    <div class="card-content">
+                        <ul>
+                            ${rec.items.map(item => `<li>${item}</li>`).join('')}
+                        </ul>
+                    </div>
+                `;
+                
+                resultsGrid.appendChild(card);
+            });
+            
+            document.getElementById('resultsSection').style.display = 'block';
+            document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function generatePersonalizedRecommendations(formData, healthScore) {
+            const age = parseInt(formData.get('age'));
+            const gender = formData.get('gender');
+            const activity = formData.get('activity');
+            const symptoms = getCheckedValues('symptom_');
+            const goals = getCheckedValues('goal_');
+            
+            const recommendations = [];
+            
+            // Always include foundation recommendations
+            recommendations.push({
+                icon: '🧬',
+                title: 'Critical Biomarker Findings',
+                priority: 'high',
+                items: [
+                    'Vitamin D: 28 ng/mL (Optimal: 40-60) - Increase by 2000 IU daily',
+                    'Ferritin: 45 ng/mL (Optimal: 100+) - Consider iron supplementation',
+                    'B12: 320 pg/mL (Optimal: 500+) - Add methylcobalamin 1000 mcg',
+                    'Inflammatory markers elevated - Anti-inflammatory protocol needed'
+                ]
+            });
+            
+            // Energy-specific recommendations
+            if (symptoms.includes('fatigue') || goals.includes('energy')) {
+                recommendations.push({
+                    icon: '⚡',
+                    title: 'Energy Optimization Protocol',
+                    priority: 'high',
+                    items: [
+                        'Mitochondrial support: CoQ10 200mg + PQQ 20mg daily',
+                        'B-complex (methylated forms) with breakfast',
+                        'Iron optimization based on ferritin levels',
+                        'Adapt exercise intensity to current energy levels'
+                    ]
+                });
+            }
+            
+            // Sleep recommendations
+            if (symptoms.includes('insomnia') || goals.includes('sleep')) {
+                recommendations.push({
+                    icon: '🛌',
+                    title: 'Sleep Quality Enhancement',
+                    priority: 'medium',
+                    items: [
+                        'Magnesium glycinate 400mg 2 hours before bed',
+                        'Address cortisol rhythm with adaptogenic herbs',
+                        'Blue light filtering 2 hours before sleep',
+                        'Room temperature 65-68°F for optimal recovery'
+                    ]
+                });
+            }
+            
+            // Personalized nutrition
+            const diet = formData.get('diet');
+            let nutritionTitle = 'Personalized Nutrition Plan';
+            let nutritionItems = [];
+            
+            if (diet === 'vegan' || diet === 'vegetarian') {
+                nutritionItems = [
+                    'B12 and iron monitoring critical for plant-based diet',
+                    'Combine vitamin C with iron-rich plant foods',
+                    'Consider algae-based omega-3 supplements',
+                    'Ensure adequate protein combining for complete amino acids'
+                ];
+            } else {
+                nutritionItems = [
+                    'Include fatty fish 2-3x/week for omega-3s',
+                    'Grass-fed beef for bioavailable iron and B-vitamins',
+                    'Anti-inflammatory foods: berries, leafy greens, nuts',
+                    'Limit processed foods and refined sugars'
+                ];
+            }
+            
+            recommendations.push({
+                icon: '🥗',
+                title: nutritionTitle,
+                priority: 'medium',
+                items: nutritionItems
+            });
+            
+            // Activity-based recommendations
+            if (activity === 'sedentary') {
+                recommendations.push({
+                    icon: '🚶',
+                    title: 'Movement Integration Plan',
+                    priority: 'high',
+                    items: [
+                        'Start with 10-minute walks after meals',
+                        'Desk exercises every hour during work',
+                        'Weekend activities: hiking, swimming, cycling',
+                        'Gradual progression to avoid overexertion'
+                    ]
+                });
+            } else if (activity === 'very_active' || activity === 'extremely_active') {
+                recommendations.push({
+                    icon: '🏋️',
+                    title: 'Performance Optimization',
+                    priority: 'low',
+                    items: [
+                        'Recovery monitoring: HRV, sleep quality tracking',
+                        'Antioxidant support for intense training load',
+                        'Proper hydration with electrolyte balance',
+                        'Consider creatine supplementation for power sports'
+                    ]
+                });
+            }
+            
+            // Age-specific recommendations
+            if (age > 40) {
+                recommendations.push({
+                    icon: '🧘',
+                    title: 'Longevity & Anti-Aging',
+                    priority: 'medium',
+                    items: [
+                        'NAD+ precursors for cellular energy',
+                        'Hormone optimization consultation recommended',
+                        'Advanced glycation end products (AGE) reduction',
+                        'Regular comprehensive health monitoring'
+                    ]
+                });
+            }
+            
+            return recommendations;
+        }
+
+        function getCheckedValues(prefix) {
+            const checkboxes = document.querySelectorAll(`input[id^="${prefix}"]:checked`);
+            return Array.from(checkboxes).map(cb => cb.value);
+        }
+
+        // Handle signup
+        document.getElementById('signupForm').onsubmit = function(e) {
+            e.preventDefault();
+            const email = document.getElementById('emailInput').value;
+            
+            alert('Welcome to Wuksy VIP! You\'ll receive your complete biomarker analysis report and exclusive launch updates soon.');
+            
+            this.reset();
+        }
+    </script>
+</body>
+</html>
