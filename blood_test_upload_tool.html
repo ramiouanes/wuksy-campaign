@@ -430,10 +430,17 @@
             box-shadow: 0 4px 15px rgba(107, 157, 107, 0.3);
         }
         
-        .analyze-btn:hover {
+        .analyze-btn:hover:not(:disabled) {
             background: linear-gradient(135deg, var(--primary-600), var(--primary-700));
             transform: translateY(-2px);
             box-shadow: 0 8px 25px rgba(107, 157, 107, 0.4);
+        }
+        
+        .analyze-btn:disabled {
+            background: var(--neutral-300);
+            color: var(--neutral-500);
+            cursor: not-allowed;
+            box-shadow: none;
         }
         
         .loading-section {
@@ -866,7 +873,19 @@
             </div>
             
             <div class="form-section" id="formSection">
-                <h2>Step 2: Share Your Wellness Journey</h2>
+                <h2>Step 2: Get Your Personalized Analysis</h2>
+                <p style="text-align: center; color: var(--neutral-600); margin-bottom: 2rem;">
+                    Enter your email to unlock personalized insights and receive your analysis report.
+                </p>
+                
+                <!-- Email Input Section -->
+                <div class="form-group" style="margin-bottom: 2.5rem;">
+                    <label for="analysisEmail">Email Address</label>
+                    <input type="email" id="analysisEmail" placeholder="Enter your email to unlock analysis" required>
+                    <p style="font-size: 0.8rem; color: var(--neutral-500); margin-top: 0.5rem;">
+                        ✨ We'll send your personalized analysis report to this email
+                    </p>
+                </div>
                 
                 <form id="analysisForm">
                     <div class="form-row">
@@ -984,9 +1003,9 @@
                         <textarea id="supplements" rows="3" placeholder="List any vitamins, supplements, or medications you're currently taking..."></textarea>
                     </div>
                     
-                    <button type="button" class="analyze-btn" onclick="analyzeBloodTest()">
+                    <button type="button" class="analyze-btn" id="analyzeBtn" onclick="analyzeBloodTest()" disabled>
                         <i data-lucide="sparkles" width="20" height="20"></i>
-                        Begin My Wellness Analysis
+                        <span id="analyzeBtnText">Enter Email to Begin Analysis</span>
                     </button>
                 </form>
             </div>
@@ -1025,13 +1044,15 @@
         <p>This mindful analysis is just the beginning. Join WUKSY's full platform for complete biomarker harmony and ongoing wellness support.</p>
         <p><strong>Get 50% OFF when we launch + exclusive wellness resources</strong></p>
         
-        <form class="signup-form" id="signupForm">
-            <input type="email" placeholder="Enter your email for early access" required id="emailInput">
-            <button type="submit" class="signup-btn">
-                <i data-lucide="arrow-right" width="16" height="16"></i>
-                Join Early Access
-            </button>
-        </form>
+        <div style="text-align: center;">
+            <p style="color: var(--neutral-600); margin-bottom: 1rem;">
+                Already used the blood test analyzer? 
+            </p>
+            <a href="#" onclick="window.scrollTo(0, 0); return false;" class="signup-btn" style="display: inline-flex; align-items: center; gap: 0.5rem; text-decoration: none;">
+                <i data-lucide="arrow-up" width="16" height="16"></i>
+                Try Another Analysis
+            </a>
+        </div>
         
         <p style="margin-top: 1rem; font-size: 0.875rem; opacity: 0.7; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
             <i data-lucide="shield-check" width="16" height="16"></i>
@@ -1063,6 +1084,23 @@
     <script>
         // Initialize Lucide icons
         lucide.createIcons();
+        
+        // Email validation and button state management
+        document.getElementById('analysisEmail').addEventListener('input', function() {
+            const email = this.value;
+            const analyzeBtn = document.getElementById('analyzeBtn');
+            const btnText = document.getElementById('analyzeBtnText');
+            
+            if (email && WUKSY.isValidEmail(email)) {
+                analyzeBtn.disabled = false;
+                btnText.textContent = 'Begin My Wellness Analysis';
+                analyzeBtn.style.background = 'linear-gradient(135deg, var(--primary-500), var(--primary-600))';
+            } else {
+                analyzeBtn.disabled = true;
+                btnText.textContent = 'Enter Email to Begin Analysis';
+                analyzeBtn.style.background = '';
+            }
+        });
 
         let uploadedFiles = [];
 
@@ -1152,6 +1190,13 @@
         }
 
         async function analyzeBloodTest() {
+            // Validate email first
+            const email = document.getElementById('analysisEmail').value;
+            if (!email || !WUKSY.isValidEmail(email)) {
+                alert('Please enter a valid email address to continue.');
+                return;
+            }
+            
             // Validate form
             const form = document.getElementById('analysisForm');
             const formData = new FormData(form);
@@ -1257,6 +1302,43 @@
                 recommendations,
                 analysisData: window.currentBloodTestData
             };
+            
+            // Capture email and send notification
+            try {
+                const result = await WUKSY.captureEmail(email, 'blood_test', {
+                    source_page: 'blood_test_analyzer',
+                    health_score: healthScore,
+                    file_count: uploadedFiles.length,
+                    has_analysis: true
+                });
+                
+                // Upload files
+                if (uploadedFiles && uploadedFiles.length > 0) {
+                    for (let file of uploadedFiles) {
+                        try {
+                            await WUKSY.uploadBloodTest(file, email, {
+                                form_data: window.currentBloodTestData,
+                                analysis_results: { healthScore, recommendations },
+                                upload_context: 'blood_test_analyzer'
+                            });
+                        } catch (uploadError) {
+                            console.warn('File upload failed:', uploadError);
+                        }
+                    }
+                }
+                
+                // Save analysis results
+                await WUKSY.saveQuizResults(
+                    email,
+                    'blood_test_analysis',
+                    window.currentBloodTestData,
+                    healthScore,
+                    { recommendations }
+                );
+            } catch (error) {
+                console.error('Failed to save analysis:', error);
+                // Don't block the results display if saving fails
+            }
             
             // Track analysis completion
             await WUKSY.trackEvent('analysis_completed', 'blood_test', { 
@@ -1510,10 +1592,16 @@
     <!-- Supabase Library -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
+    <!-- EmailJS Library -->
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    
     <!-- Supabase Configuration -->
     <script src="js/config.js"></script>
     
     <!-- Supabase Utilities -->
     <script src="js/supabase-utils.js"></script>
+    
+    <!-- Email Notifications -->
+    <script src="js/email-notifications.js"></script>
 </body>
 </html>

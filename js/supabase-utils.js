@@ -51,6 +51,20 @@ async function captureEmail(email, source, metadata = {}) {
         // Track analytics
         await trackEvent('email_signup', source, { email });
 
+        // Send welcome email notification
+        try {
+            if (window.EmailNotifications && window.EmailNotifications.sendWaitlistConfirmation) {
+                await window.EmailNotifications.sendWaitlistConfirmation(email, {
+                    source,
+                    name: email.split('@')[0],
+                    ...metadata
+                });
+            }
+        } catch (emailError) {
+            console.warn('⚠️ Failed to send welcome email:', emailError);
+            // Don't fail the signup if email fails
+        }
+
         return { success: true, isNew: true, data: data[0] };
     } catch (error) {
         console.error('Email capture error:', error);
@@ -83,6 +97,38 @@ async function saveQuizResults(email, quizType, results, score, recommendations 
 
         // Track analytics
         await trackEvent('quiz_completed', quizType, { email, score });
+
+        // Send quiz completion email notification
+        try {
+            if (window.EmailNotifications) {
+                if (quizType === 'health_score_calculator' && window.EmailNotifications.sendHealthScoreNotification) {
+                    await window.EmailNotifications.sendHealthScoreNotification(email, {
+                        score: score || 'N/A',
+                        category: getScoreCategory(score),
+                        topStrength: results.topStrength || 'Overall wellness awareness',
+                        improvementArea: results.improvementArea || 'Lifestyle optimization',
+                        tips: recommendations.tips || 'Continue your wellness journey'
+                    });
+                } else if (quizType === 'health_audit' && window.EmailNotifications.sendHealthAuditNotification) {
+                    await window.EmailNotifications.sendHealthAuditNotification(email, {
+                        auditScore: score || 'Completed',
+                        criticalGaps: results.criticalGaps || 3,
+                        actionItems: results.actionItems || 5,
+                        priorityFocus: results.priorityFocus || 'Data tracking consistency'
+                    });
+                } else if (quizType === 'supplement_interaction' && window.EmailNotifications.sendSupplementNotification) {
+                    await window.EmailNotifications.sendSupplementNotification(email, {
+                        safetyScore: results.safetyScore || 'Good',
+                        supplementsCount: results.supplementsCount || 0,
+                        interactionsFound: results.interactionsFound || 0,
+                        timingRecommendations: recommendations.timing || 'Optimized schedule available'
+                    });
+                }
+            }
+        } catch (emailError) {
+            console.warn('⚠️ Failed to send quiz completion email:', emailError);
+            // Don't fail the quiz save if email fails
+        }
 
         return { success: true, data: data[0] };
     } catch (error) {
@@ -157,6 +203,21 @@ async function uploadBloodTest(file, email, additionalData = {}) {
         // Track analytics
         await trackEvent('file_uploaded', 'blood_test', { email, file_size: file.size });
 
+        // Send blood test upload notification
+        try {
+            if (window.EmailNotifications && window.EmailNotifications.sendBloodTestNotification) {
+                await window.EmailNotifications.sendBloodTestNotification(email, {
+                    healthScore: additionalData.analysis_results?.healthScore || 'Processing',
+                    keyFindings: additionalData.analysis_results?.keyFindings || 'Analysis in progress',
+                    recommendationsCount: additionalData.analysis_results?.recommendationsCount || 0,
+                    filesProcessed: 1
+                });
+            }
+        } catch (emailError) {
+            console.warn('⚠️ Failed to send blood test upload email:', emailError);
+            // Don't fail the upload if email fails
+        }
+
         return { success: true, data: dbData[0], filePath: uploadData.path };
     } catch (error) {
         console.error('File upload error:', error);
@@ -184,6 +245,15 @@ async function getUploadStatus(email, uploadId) {
         console.error('Get upload status error:', error);
         return { success: false, error: error.message };
     }
+}
+
+// Helper function to categorize health scores
+function getScoreCategory(score) {
+    if (!score || typeof score !== 'number') return 'Assessment Complete';
+    if (score >= 80) return 'Excellent';
+    if (score >= 70) return 'Good';
+    if (score >= 60) return 'Fair';
+    return 'Needs Improvement';
 }
 
 /**

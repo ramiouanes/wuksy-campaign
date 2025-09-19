@@ -50,6 +50,18 @@ CREATE TABLE IF NOT EXISTS public.supplement_interactions (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+-- Create email_notifications table
+CREATE TABLE IF NOT EXISTS public.email_notifications (
+    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+    email VARCHAR(255) NOT NULL,
+    notification_type VARCHAR(100) NOT NULL,
+    template_id VARCHAR(100) NOT NULL,
+    status VARCHAR(50) DEFAULT 'pending',
+    metadata JSONB DEFAULT '{}',
+    sent_at TIMESTAMP WITH TIME ZONE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
 -- Create page_analytics table
 CREATE TABLE IF NOT EXISTS public.page_analytics (
     id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
