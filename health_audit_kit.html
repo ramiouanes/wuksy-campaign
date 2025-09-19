@@ -1305,16 +1305,22 @@
 
         // Email validation function (fallback if WUKSY not loaded yet)
         function isValidAuditEmail(email) {
+            console.log('Audit Kit: Validating email:', email);
+            console.log('Audit Kit: WUKSY available:', typeof WUKSY !== 'undefined');
             try {
                 if (typeof WUKSY !== 'undefined' && WUKSY.isValidEmail) {
-                    return WUKSY.isValidEmail(email);
+                    const result = WUKSY.isValidEmail(email);
+                    console.log('Audit Kit: WUKSY validation result:', result);
+                    return result;
                 }
             } catch (error) {
                 console.warn('WUKSY email validation not available:', error);
             }
             // Fallback email validation
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            return emailRegex.test(email);
+            const result = emailRegex.test(email);
+            console.log('Audit Kit: Fallback validation result:', result);
+            return result;
         }
 
         // Stepped Form Variables for Audit
@@ -1437,21 +1443,29 @@
             // Ensure the first step is visible and properly initialized
             showAuditStep(1);
             
-            // Set up email validation
-            const emailInput = document.getElementById('auditEmail');
-            if (emailInput) {
+            // Wait for WUKSY to load, then set up email validation
+            function setupEmailValidation() {
+                console.log('Audit Kit: Setting up email validation');
+                console.log('Audit Kit: WUKSY available:', typeof WUKSY !== 'undefined');
+                const emailInput = document.getElementById('auditEmail');
+                console.log('Audit Kit: Email input element found:', !!emailInput);
+                if (emailInput) {
                 emailInput.addEventListener('input', function() {
                     const email = this.value;
+                    console.log('Audit Kit: Email input event triggered, email:', email);
                     const calculateBtn = document.getElementById('auditCalculateBtn');
                     const btnText = document.getElementById('auditCalculateBtnText');
+                    console.log('Audit Kit: Button elements found:', !!calculateBtn, !!btnText);
                     
                     if (email && isValidAuditEmail(email)) {
+                        console.log('Audit Kit: Email is valid, enabling button');
                         calculateBtn.disabled = false;
                         btnText.textContent = 'Discover My Insights';
                         calculateBtn.style.background = 'linear-gradient(135deg, var(--primary-500), var(--primary-600))';
                         calculateBtn.style.cursor = 'pointer';
                         this.style.borderColor = 'var(--primary-500)';
                     } else {
+                        console.log('Audit Kit: Email is invalid, disabling button');
                         calculateBtn.disabled = true;
                         btnText.textContent = 'Enter Email to Discover';
                         calculateBtn.style.background = 'var(--neutral-400)';
@@ -1462,6 +1476,29 @@
                     // Update progress to refresh next button state
                     updateAuditProgress();
                 });
+                } else {
+                    console.error('Audit Kit: Email input element not found!');
+                }
+            }
+            
+            // Try to setup email validation, retry if WUKSY not ready
+            if (typeof WUKSY !== 'undefined') {
+                setupEmailValidation();
+            } else {
+                console.log('Audit Kit: WUKSY not ready, waiting...');
+                let retryCount = 0;
+                const checkForWuksy = setInterval(() => {
+                    retryCount++;
+                    if (typeof WUKSY !== 'undefined') {
+                        console.log('Audit Kit: WUKSY now available after', retryCount, 'retries');
+                        clearInterval(checkForWuksy);
+                        setupEmailValidation();
+                    } else if (retryCount > 50) { // Give up after 5 seconds
+                        console.error('Audit Kit: WUKSY failed to load after 5 seconds');
+                        clearInterval(checkForWuksy);
+                        setupEmailValidation(); // Try anyway with fallback
+                    }
+                }, 100);
             }
         });
 
@@ -1690,6 +1727,23 @@
                         );
                     }
                     
+                    // Send email notification with audit results
+                    if (auditData.score && window.EmailNotifications) {
+                        try {
+                            await window.EmailNotifications.sendHealthAuditNotification(auditEmail, {
+                                auditScore: auditData.score,
+                                criticalGaps: Math.max(1, Math.floor((100 - auditData.score) / 20)),
+                                actionItems: Math.max(3, Math.floor((100 - auditData.score) / 15)),
+                                priorityFocus: auditData.score < 50 ? 'Data tracking consistency' : 
+                                              auditData.score < 75 ? 'Health insights utilization' : 
+                                              'Advanced wellness optimization'
+                            });
+                            console.log('✅ Health audit email notification sent');
+                        } catch (emailError) {
+                            console.warn('⚠️ Failed to send health audit email notification:', emailError);
+                        }
+                    }
+                    
                     // Success state
                     button.innerHTML = '<i data-lucide="check" width="18" height="18"></i> Audit Saved!';
                     button.style.background = '#10b981';
@@ -1744,5 +1798,7 @@
     
     <!-- Supabase Utilities -->
     <script src="js/supabase-utils.js"></script>
+    <!-- Email Notifications Service -->
+    <script src="js/email-notifications.js"></script>
 </body>
 </html>

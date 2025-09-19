@@ -1336,16 +1336,22 @@
 
         // Email validation function (fallback if WUKSY not loaded yet)
         function isValidEmail(email) {
+            console.log('Health Calculator: Validating email:', email);
+            console.log('Health Calculator: WUKSY available:', typeof WUKSY !== 'undefined');
             try {
                 if (typeof WUKSY !== 'undefined' && WUKSY.isValidEmail) {
-                    return WUKSY.isValidEmail(email);
+                    const result = WUKSY.isValidEmail(email);
+                    console.log('Health Calculator: WUKSY validation result:', result);
+                    return result;
                 }
             } catch (error) {
                 console.warn('WUKSY email validation not available:', error);
             }
             // Fallback email validation
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            return emailRegex.test(email);
+            const result = emailRegex.test(email);
+            console.log('Health Calculator: Fallback validation result:', result);
+            return result;
         }
 
         // Slider event handlers will be set up in DOMContentLoaded
@@ -1564,6 +1570,26 @@
                         );
                     }
                     
+                    // Send email notification with health score results
+                    if (healthScoreData.score && window.EmailNotifications) {
+                        try {
+                            await window.EmailNotifications.sendHealthScoreNotification(calculatorEmail, {
+                                score: healthScoreData.score,
+                                category: healthScoreData.category,
+                                topStrength: healthScoreData.score >= 80 ? 'Excellent wellness foundation' :
+                                           healthScoreData.score >= 60 ? 'Good health awareness' :
+                                           'Room for improvement',
+                                improvementArea: healthScoreData.score < 60 ? 'Basic wellness habits' :
+                                               healthScoreData.score < 80 ? 'Advanced optimization' :
+                                               'Fine-tuning your routine',
+                                tips: healthScoreData.recommendations || 'Personalized recommendations included'
+                            });
+                            console.log('✅ Health score email notification sent');
+                        } catch (emailError) {
+                            console.warn('⚠️ Failed to send health score email notification:', emailError);
+                        }
+                    }
+                    
                     // Success state
                     button.innerHTML = '<i data-lucide="check" width="16" height="16"></i> Welcome!';
                     button.style.background = '#10b981';
@@ -1754,21 +1780,29 @@
             // Ensure the first step is visible and properly initialized
             showStep(1);
             
-            // Set up email validation
-            const emailInput = document.getElementById('calculatorEmail');
-            if (emailInput) {
+            // Wait for WUKSY to load, then set up email validation
+            function setupEmailValidation() {
+                console.log('Health Calculator: Setting up email validation');
+                console.log('Health Calculator: WUKSY available:', typeof WUKSY !== 'undefined');
+                const emailInput = document.getElementById('calculatorEmail');
+                console.log('Health Calculator: Email input element found:', !!emailInput);
+                if (emailInput) {
                 emailInput.addEventListener('input', function() {
                     const email = this.value;
+                    console.log('Health Calculator: Email input event triggered, email:', email);
                     const calculateBtn = document.getElementById('calculateBtn');
                     const btnText = document.getElementById('calculateBtnText');
+                    console.log('Health Calculator: Button elements found:', !!calculateBtn, !!btnText);
                     
                     if (email && isValidEmail(email)) {
+                        console.log('Health Calculator: Email is valid, enabling button');
                         calculateBtn.disabled = false;
                         btnText.textContent = 'Calculate My Health Score';
                         calculateBtn.style.background = 'linear-gradient(135deg, var(--primary-500), var(--primary-600))';
                         calculateBtn.style.cursor = 'pointer';
                         this.style.borderColor = 'var(--primary-500)';
                     } else {
+                        console.log('Health Calculator: Email is invalid, disabling button');
                         calculateBtn.disabled = true;
                         btnText.textContent = 'Enter Email to Calculate';
                         calculateBtn.style.background = 'var(--neutral-400)';
@@ -1779,6 +1813,29 @@
                     // Update progress to refresh next button state
                     updateProgress();
                 });
+                } else {
+                    console.error('Health Calculator: Email input element not found!');
+                }
+            }
+            
+            // Try to setup email validation, retry if WUKSY not ready
+            if (typeof WUKSY !== 'undefined') {
+                setupEmailValidation();
+            } else {
+                console.log('Health Calculator: WUKSY not ready, waiting...');
+                let retryCount = 0;
+                const checkForWuksy = setInterval(() => {
+                    retryCount++;
+                    if (typeof WUKSY !== 'undefined') {
+                        console.log('Health Calculator: WUKSY now available after', retryCount, 'retries');
+                        clearInterval(checkForWuksy);
+                        setupEmailValidation();
+                    } else if (retryCount > 50) { // Give up after 5 seconds
+                        console.error('Health Calculator: WUKSY failed to load after 5 seconds');
+                        clearInterval(checkForWuksy);
+                        setupEmailValidation(); // Try anyway with fallback
+                    }
+                }, 100);
             }
         });
 
@@ -1815,5 +1872,7 @@
     
     <!-- Supabase Utilities -->
     <script src="js/supabase-utils.js"></script>
+    <!-- Email Notifications Service -->
+    <script src="js/email-notifications.js"></script>
 </body>
 </html>
