@@ -3,345 +3,686 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Supplement Interaction Checker - Wuksy</title>
+    <title>Supplement Interaction Checker - WUKSY | AI-Powered Wellness Insights</title>
+    <meta name="description" content="Check your supplement interactions safely with WUKSY's AI-powered tool. Ensure your supplements work together effectively for optimal wellness.">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
+
+        :root {
+            /* WUKSY Brand Colors */
+            --primary-50: #f6f8f6;
+            --primary-100: #e8f0e8;
+            --primary-200: #d3e4d3;
+            --primary-300: #b3d1b3;
+            --primary-400: #8bb88b;
+            --primary-500: #6b9d6b;
+            --primary-600: #5a8a5a;
+            --primary-700: #4a724a;
+            --primary-800: #3d5d3d;
+            --primary-900: #334d33;
+
+            --neutral-50: #fafafa;
+            --neutral-100: #f7f7f7;
+            --neutral-200: #f0f0f0;
+            --neutral-300: #e8e8e8;
+            --neutral-400: #d1d1d1;
+            --neutral-500: #a3a3a3;
+            --neutral-600: #737373;
+            --neutral-700: #525252;
+            --neutral-800: #404040;
+            --neutral-900: #262626;
+
+            --stone-50: #fafaf9;
+            --stone-100: #f5f5f4;
+            --stone-500: #78716c;
+            --stone-600: #57534e;
+        }
         
         body {
-            font-family: 'Arial', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
+            font-family: 'Inter', system-ui, sans-serif;
+            line-height: 1.6;
+            color: var(--neutral-800);
+            background-color: var(--neutral-50);
+            overflow-x: hidden;
         }
         
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            overflow: hidden;
+        /* Zen-inspired animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
-        
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .animate-fade-in-up {
+            animation: fadeInUp 0.8s ease-out forwards;
+        }
+
+        .animate-float {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        /* Typography */
+        .zen-text {
+            color: var(--primary-600);
+        }
+
+        .zen-gradient {
+            background: linear-gradient(135deg, var(--primary-50) 0%, var(--stone-50) 100%);
+        }
+
+        /* Header */
         .header {
-            background: linear-gradient(135deg, #ff9a56 0%, #ff6b95 100%);
-            padding: 40px 30px;
-            text-align: center;
-            color: white;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(232, 232, 232, 0.5);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            transition: all 0.3s ease;
         }
-        
-        .header h1 {
+
+        .header-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 4rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+            color: var(--neutral-800);
+        }
+
+        .logo-svg {
+            height: 2rem;
+            width: auto;
+            max-width: 120px;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        /* Hero Section */
+        .hero-section {
+            position: relative;
+            padding: 3rem 0 2rem;
+            text-align: center;
+            background: linear-gradient(135deg, var(--neutral-50) 0%, rgba(246, 248, 246, 0.5) 100%);
+        }
+
+        .hero-content {
+            max-width: 48rem;
+            margin: 0 auto;
+            padding: 0 2rem;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease-out 0.2s forwards;
+        }
+
+        .hero-section h1 {
             font-size: 2.5rem;
-            margin-bottom: 10px;
-            font-weight: 700;
+            font-weight: 300;
+            line-height: 1.2;
+            margin-bottom: 1rem;
+            color: var(--neutral-800);
+        }
+
+        .hero-section .zen-text {
+            display: block;
+            font-weight: 500;
+        }
+
+        .hero-section p {
+            font-size: 1.125rem;
+            color: var(--neutral-600);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .coming-soon-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--primary-50);
+            color: var(--primary-700);
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--primary-100);
         }
         
-        .header p {
-            font-size: 1.1rem;
-            opacity: 0.9;
-        }
-        
-        .warning-banner {
-            background: #fff3cd;
-            border: 1px solid #ffeeba;
-            color: #856404;
-            padding: 15px;
-            margin: 20px;
-            border-radius: 10px;
+        .medical-disclaimer {
+            background: rgba(255, 243, 205, 0.3);
+            border: 1px solid var(--primary-200);
+            color: var(--primary-700);
+            padding: 1rem;
+            margin: 2rem 0;
+            border-radius: 0.75rem;
             text-align: center;
-            font-weight: 600;
+            font-weight: 500;
+            font-size: 0.875rem;
         }
         
         .content {
-            padding: 40px 30px;
+            padding: 2rem 1rem;
         }
         
         .input-section {
-            background: #f8f9fa;
-            border-radius: 15px;
-            padding: 30px;
-            margin-bottom: 30px;
+            background: white;
+            border: 1px solid var(--neutral-200);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease-out 0.4s forwards;
+        }
+
+        .input-section:hover {
+            box-shadow: 0 4px 12px rgba(107, 157, 107, 0.1);
         }
         
         .section-title {
             font-size: 1.5rem;
-            color: #333;
-            margin-bottom: 20px;
-            font-weight: 700;
+            color: var(--neutral-800);
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+
+        .section-description {
+            color: var(--neutral-600);
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
         }
         
         .supplement-input-group {
             display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
             align-items: center;
             flex-wrap: wrap;
         }
         
+        .supplement-select,
+        .dose-input,
+        .timing-select {
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--neutral-300);
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-family: 'Inter', system-ui, sans-serif;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
         .supplement-select {
             flex: 2;
-            padding: 12px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 1rem;
             min-width: 250px;
-        }
-        
-        .supplement-select:focus {
-            outline: none;
-            border-color: #ff9a56;
         }
         
         .dose-input {
             flex: 1;
-            padding: 12px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 1rem;
             min-width: 120px;
-        }
-        
-        .dose-input:focus {
-            outline: none;
-            border-color: #ff9a56;
         }
         
         .timing-select {
             flex: 1;
-            padding: 12px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 1rem;
             min-width: 120px;
         }
         
+        .supplement-select:focus,
+        .dose-input:focus,
         .timing-select:focus {
             outline: none;
-            border-color: #ff9a56;
+            border-color: var(--primary-500);
+            box-shadow: 0 0 0 3px rgba(107, 157, 107, 0.1);
         }
         
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            font-family: 'Inter', system-ui, sans-serif;
+        }
+
+        .btn-primary {
+            background: var(--primary-500);
+            color: white;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-600);
+            box-shadow: 0 4px 12px rgba(107, 157, 107, 0.3);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: var(--stone-100);
+            color: var(--stone-700);
+            border: 1px solid var(--stone-200);
+        }
+
+        .btn-secondary:hover {
+            background: var(--stone-200);
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--primary-600);
+            border: 1px solid var(--primary-300);
+        }
+
+        .btn-ghost:hover {
+            background: var(--primary-50);
+            border-color: var(--primary-400);
+        }
+
         .remove-btn {
             background: #dc3545;
             color: white;
             border: none;
-            padding: 12px 15px;
-            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
             cursor: pointer;
-            font-size: 0.9rem;
+            font-size: 0.875rem;
+            transition: all 0.3s ease;
         }
         
         .remove-btn:hover {
             background: #c82333;
+            transform: translateY(-1px);
         }
         
         .add-btn {
-            background: #28a745;
+            background: var(--primary-500);
             color: white;
             border: none;
-            padding: 12px 25px;
-            border-radius: 8px;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
             cursor: pointer;
-            font-weight: 600;
-            margin-top: 15px;
+            font-weight: 500;
+            margin-top: 1rem;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
         }
         
         .add-btn:hover {
-            background: #218838;
+            background: var(--primary-600);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(107, 157, 107, 0.3);
         }
         
         .check-btn {
-            background: linear-gradient(135deg, #ff9a56 0%, #ff6b95 100%);
+            background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
             color: white;
             border: none;
-            padding: 20px 40px;
-            font-size: 1.2rem;
+            padding: 1.25rem 2.5rem;
+            font-size: 1.125rem;
             font-weight: 600;
-            border-radius: 50px;
+            border-radius: 3rem;
             cursor: pointer;
-            transition: transform 0.3s;
+            transition: all 0.3s ease;
             display: block;
-            margin: 30px auto;
+            margin: 2rem auto;
+            box-shadow: 0 4px 15px rgba(107, 157, 107, 0.3);
+            position: relative;
+            overflow: hidden;
         }
         
         .check-btn:hover {
+            background: linear-gradient(135deg, var(--primary-600), var(--primary-700));
             transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(107, 157, 107, 0.4);
+        }
+
+        .check-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .check-btn:hover::before {
+            left: 100%;
         }
         
         .results-section {
             display: none;
-            margin-top: 30px;
+            margin-top: 2rem;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease-out 0.6s forwards;
         }
         
         .result-card {
-            margin-bottom: 25px;
-            border-radius: 15px;
-            padding: 25px;
-            border-left: 5px solid;
+            margin-bottom: 1.5rem;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            border: 1px solid;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .result-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
         
         .result-safe {
-            background: #d4edda;
-            border-color: #28a745;
-            color: #155724;
+            background: rgba(16, 185, 129, 0.05);
+            border-color: rgba(16, 185, 129, 0.2);
+            color: #065f46;
         }
         
         .result-caution {
-            background: #fff3cd;
-            border-color: #ffc107;
-            color: #856404;
+            background: rgba(245, 158, 11, 0.05);
+            border-color: rgba(245, 158, 11, 0.2);
+            color: #92400e;
         }
         
         .result-warning {
-            background: #f8d7da;
-            border-color: #dc3545;
-            color: #721c24;
+            background: rgba(239, 68, 68, 0.05);
+            border-color: rgba(239, 68, 68, 0.2);
+            color: #991b1b;
         }
         
         .result-icon {
-            font-size: 1.5rem;
-            margin-right: 10px;
+            font-size: 1.25rem;
+            margin-right: 0.5rem;
         }
         
         .result-title {
-            font-size: 1.3rem;
-            font-weight: 700;
-            margin-bottom: 10px;
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
         }
         
         .result-description {
-            margin-bottom: 15px;
+            margin-bottom: 1rem;
             line-height: 1.6;
+            color: var(--neutral-700);
         }
         
         .recommendations {
-            background: rgba(255,255,255,0.5);
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 10px;
+            background: rgba(255, 255, 255, 0.7);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-top: 0.75rem;
+            border: 1px solid rgba(0, 0, 0, 0.05);
         }
         
         .recommendations h4 {
-            margin-bottom: 10px;
-            color: #333;
+            margin-bottom: 0.5rem;
+            color: var(--neutral-800);
+            font-weight: 600;
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
         }
         
-        .recommendations ul {
-            margin-left: 20px;
-        }
-        
-        .recommendations li {
-            margin-bottom: 5px;
+        .recommendations p {
+            margin: 0;
+            color: var(--neutral-700);
+            font-size: 0.875rem;
+            line-height: 1.5;
         }
         
         .summary-section {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
             color: white;
-            padding: 30px;
-            border-radius: 15px;
-            margin-top: 30px;
+            padding: 2rem;
+            border-radius: 1rem;
+            margin-top: 2rem;
             text-align: center;
+            box-shadow: 0 4px 15px rgba(107, 157, 107, 0.3);
         }
         
         .summary-score {
             font-size: 3rem;
-            font-weight: 700;
-            margin-bottom: 10px;
+            font-weight: 300;
+            margin-bottom: 0.5rem;
         }
         
         .timing-chart {
             background: white;
-            border-radius: 12px;
-            padding: 20px;
-            margin-top: 20px;
-            color: #333;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+            color: var(--neutral-800);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
         
         .timing-chart h3 {
-            margin-bottom: 15px;
-            color: #667eea;
+            margin-bottom: 1rem;
+            color: var(--primary-600);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
         
         .time-slot {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px 15px;
-            margin: 8px 0;
-            background: #f8f9fa;
-            border-radius: 8px;
-            border-left: 4px solid #667eea;
+            padding: 0.75rem 1rem;
+            margin: 0.5rem 0;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 0.5rem;
+            border-left: 4px solid var(--primary-500);
         }
         
         .time-label {
-            font-weight: 600;
-            color: #495057;
+            font-weight: 500;
+            color: var(--neutral-700);
+            min-width: 120px;
         }
         
         .supplements-list {
             flex: 1;
-            margin-left: 15px;
-            color: #666;
+            margin-left: 1rem;
+            color: var(--neutral-600);
+            font-size: 0.875rem;
         }
         
         .cta-section {
-            background: #1a1a1a;
+            background: var(--neutral-900);
             color: white;
-            padding: 40px 30px;
+            padding: 3rem 2rem;
             text-align: center;
         }
         
         .cta-section h2 {
-            margin-bottom: 15px;
-            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            font-size: 1.875rem;
+            font-weight: 300;
+        }
+
+        .cta-section .zen-text {
+            color: var(--primary-400);
         }
         
         .cta-section p {
-            margin-bottom: 25px;
+            margin-bottom: 1.5rem;
             opacity: 0.9;
+            color: var(--neutral-300);
+            line-height: 1.6;
         }
         
         .signup-form {
             display: flex;
-            gap: 10px;
-            max-width: 400px;
+            gap: 0.75rem;
+            max-width: 28rem;
             margin: 0 auto;
             flex-wrap: wrap;
         }
         
         .signup-form input {
             flex: 1;
-            padding: 15px;
-            border: none;
-            border-radius: 8px;
+            padding: 0.875rem 1rem;
+            border: 1px solid var(--neutral-600);
+            border-radius: 0.5rem;
             font-size: 1rem;
+            background: white;
+            color: var(--neutral-800);
+            transition: all 0.3s ease;
+            min-width: 200px;
+        }
+
+        .signup-form input:focus {
+            outline: none;
+            border-color: var(--primary-500);
+            box-shadow: 0 0 0 3px rgba(107, 157, 107, 0.1);
         }
         
         .signup-btn {
-            background: #ff9a56;
+            background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
             color: white;
             border: none;
-            padding: 15px 25px;
-            border-radius: 8px;
+            padding: 0.875rem 1.5rem;
+            border-radius: 0.5rem;
             cursor: pointer;
             font-weight: 600;
-            transition: background 0.3s;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(107, 157, 107, 0.3);
         }
         
         .signup-btn:hover {
-            background: #ff8a46;
+            background: linear-gradient(135deg, var(--primary-600), var(--primary-700));
+            transform: translateY(-1px);
+            box-shadow: 0 8px 25px rgba(107, 157, 107, 0.4);
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--neutral-900);
+            color: white;
+            padding: 3rem 1rem 2rem;
+        }
+
+        .footer-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            text-align: center;
+            padding: 0 2rem;
+        }
+
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .footer-icon-svg {
+            height: 1.5rem;
+            width: auto;
+            margin-right: 0.5rem;
+        }
+
+        .footer p {
+            color: var(--neutral-400);
+            margin-bottom: 1rem;
+        }
+
+        .medical-disclaimer-footer {
+            border-top: 1px solid var(--neutral-700);
+            padding-top: 2rem;
+            margin-top: 2rem;
+            font-size: 0.875rem;
+            color: var(--neutral-500);
+        }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--neutral-100);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--neutral-400);
+            border-radius: 2px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--neutral-500);
         }
         
+        /* Responsive Design */
         @media (max-width: 768px) {
-            .header h1 {
-                font-size: 1.8rem;
+            .hero-section h1 {
+                font-size: 2rem;
+            }
+            
+            .hero-content {
+                padding: 0 1rem;
             }
             
             .content {
-                padding: 20px 15px;
+                padding: 1.5rem 1rem;
+            }
+            
+            .input-section {
+                padding: 1.5rem;
             }
             
             .supplement-input-group {
@@ -356,29 +697,92 @@
             
             .signup-form {
                 flex-direction: column;
+                gap: 0.75rem;
             }
             
             .signup-form input {
-                margin-bottom: 10px;
+                margin-bottom: 0;
+                min-width: 100%;
+            }
+
+            .header-container {
+                padding: 0 1rem;
+            }
+
+            .footer-container {
+                padding: 0 1rem;
+            }
+
+            .cta-section {
+                padding: 2rem 1rem;
+            }
+
+            .check-btn {
+                padding: 1rem 2rem;
+                font-size: 1rem;
+            }
+        }
+
+        @media (min-width: 768px) {
+            .hero-section {
+                padding: 4rem 0 3rem;
+            }
+            
+            .hero-section h1 {
+                font-size: 3rem;
+            }
+
+            .signup-form {
+                flex-direction: row;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>⚗️ Supplement Interaction Checker</h1>
-            <p>Ensure your supplements work together safely and effectively</p>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-container">
+            <a href="index.html" class="logo">
+                <img src="logo_clean.svg" alt="WUKSY" class="logo-svg" />
+            </a>
         </div>
-        
-        <div class="warning-banner">
-            ⚠️ This tool is for educational purposes only. Always consult with healthcare providers before making changes to your supplement routine.
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-content">
+            <div class="coming-soon-badge animate-float">
+                <i data-lucide="flask-conical" width="16" height="16"></i>
+                <span>AI-Powered Analysis</span>
+            </div>
+            
+            <h1>
+                Ensure Your Supplements Work
+                <span class="zen-text">In Perfect Harmony</span>
+            </h1>
+            
+            <p>
+                Check for interactions and optimize your supplement timing with our thoughtful AI-powered tool. 
+                Find peace of mind in your wellness journey through careful supplement coordination.
+            </p>
+        </div>
+    </section>
+
+    <div class="container">
+        <div class="medical-disclaimer">
+            <i data-lucide="shield-alert" width="16" height="16" style="vertical-align: middle; margin-right: 0.5rem;"></i>
+            This tool provides educational guidance only. Always consult with qualified healthcare professionals before making changes to your supplement routine.
         </div>
         
         <div class="content">
             <div class="input-section">
-                <h2 class="section-title">💊 Your Current Supplements</h2>
-                <p style="margin-bottom: 25px; color: #666;">Add all supplements, vitamins, and medications you're currently taking:</p>
+                <h2 class="section-title">
+                    <i data-lucide="pill" width="24" height="24" style="vertical-align: middle; margin-right: 0.5rem; color: var(--primary-600);"></i>
+                    Your Current Supplement Stack
+                </h2>
+                <p class="section-description">
+                    Add all supplements, vitamins, and medications you're currently taking. Our AI will analyze potential interactions and suggest optimal timing for your wellness journey.
+                </p>
                 
                 <div id="supplementsContainer">
                     <div class="supplement-input-group">
@@ -420,15 +824,22 @@
                     </div>
                 </div>
                 
-                <button class="add-btn" onclick="addSupplementRow()">+ Add Another Supplement</button>
+                <button class="add-btn" onclick="addSupplementRow()">
+                    <i data-lucide="plus" width="16" height="16"></i>
+                    Add Another Supplement
+                </button>
                 
                 <button class="check-btn" onclick="checkInteractions()">
-                    🔍 Check My Supplement Stack
+                    <i data-lucide="sparkles" width="20" height="20" style="margin-right: 0.5rem;"></i>
+                    Analyze My Wellness Stack
                 </button>
             </div>
             
             <div class="results-section" id="resultsSection">
-                <h2 class="section-title">📋 Interaction Analysis</h2>
+                <h2 class="section-title">
+                    <i data-lucide="brain" width="24" height="24" style="vertical-align: middle; margin-right: 0.5rem; color: var(--primary-600);"></i>
+                    Your Personalized Wellness Insights
+                </h2>
                 <div id="interactionResults">
                     <!-- Dynamic results will appear here -->
                 </div>
@@ -439,7 +850,10 @@
                     <p id="scoreDescription">Your supplement stack is generally safe with minor optimization opportunities</p>
                     
                     <div class="timing-chart" id="timingChart">
-                        <h3>⏰ Optimal Timing Schedule</h3>
+                        <h3>
+                            <i data-lucide="clock" width="20" height="20"></i>
+                            Optimal Timing Schedule
+                        </h3>
                         <div id="timingSchedule">
                             <!-- Dynamic timing recommendations -->
                         </div>
@@ -449,20 +863,47 @@
         </div>
         
         <div class="cta-section">
-            <h2>🧬 Want Personalized Supplement Optimization?</h2>
-            <p>This checker gives you basic interactions. Wuksy provides AI-powered personalized recommendations based on your blood work.</p>
-            <p><strong>Get 50% off your first Wuksy analysis + personalized supplement protocol</strong></p>
+            <h2>
+                Want <span class="zen-text">Deeper Wellness Insights?</span>
+            </h2>
+            <p>This tool provides basic interactions. The full WUKSY platform offers AI-powered personalized recommendations based on your blood work and complete health profile.</p>
+            <p><strong>🌱 Get 50% OFF your first WUKSY analysis + personalized supplement protocol</strong></p>
             
             <form class="signup-form" id="signupForm">
-                <input type="email" placeholder="Enter your email address" required id="emailInput">
-                <button type="submit" class="signup-btn">Get Personalized Analysis</button>
+                <input type="email" placeholder="Enter your email for early access" required id="emailInput">
+                <button type="submit" class="signup-btn">
+                    <i data-lucide="sparkles" width="16" height="16" style="margin-right: 0.25rem;"></i>
+                    Join Early Access
+                </button>
             </form>
             
-            <p style="margin-top: 15px; font-size: 0.9rem; opacity: 0.7;">
-                🔒 Join 2,847+ people optimizing their health with AI-powered insights
+            <p style="margin-top: 1rem; font-size: 0.875rem; opacity: 0.7;">
+                <i data-lucide="shield-check" width="14" height="14" style="vertical-align: middle; margin-right: 0.25rem;"></i>
+                Join 2,847+ people finding peace in their wellness journey
             </p>
         </div>
     </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-logo">
+                <img src="logo_clean.svg" alt="WUKSY Icon" class="footer-icon-svg" />
+            </div>
+            
+            <p>AI-Powered Personalized Wellness Platform</p>
+            
+            <div class="medical-disclaimer-footer">
+                <p>
+                    <strong>Medical Disclaimer:</strong> WUKSY provides educational information only and is not intended to diagnose, treat, cure, or prevent any disease. 
+                    Always consult with qualified healthcare professionals before making health decisions.
+                </p>
+                <p style="margin-top: 1rem;">
+                    © 2024 WUKSY. All rights reserved.
+                </p>
+            </div>
+        </div>
+    </footer>
 
     <script>
         const supplementData = {
@@ -851,11 +1292,76 @@
         document.getElementById('signupForm').onsubmit = function(e) {
             e.preventDefault();
             const email = document.getElementById('emailInput').value;
+            const button = this.querySelector('button[type="submit"]');
+            const originalText = button.innerHTML;
             
-            alert('Thanks for your interest in Wuksy! You\'ll receive your 50% discount code and early access notification soon.');
+            // Show loading state
+            button.innerHTML = '<i data-lucide="loader-2" width="16" height="16" style="animation: spin 1s linear infinite; margin-right: 0.25rem;"></i> Joining...';
+            button.disabled = true;
             
-            this.reset();
+            // Simulate API call
+            setTimeout(() => {
+                // Success state
+                button.innerHTML = '<i data-lucide="check" width="16" height="16" style="margin-right: 0.25rem;"></i> Welcome to WUKSY!';
+                button.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+                
+                // Show success message
+                const successMessage = document.createElement('div');
+                successMessage.style.cssText = `
+                    background: var(--primary-600); 
+                    color: white; 
+                    padding: 1rem; 
+                    border-radius: 0.5rem; 
+                    margin-top: 1rem; 
+                    text-align: center;
+                    font-size: 0.875rem;
+                `;
+                successMessage.innerHTML = `
+                    🌱 <strong>Welcome to your wellness journey!</strong><br>
+                    Check your email for your early access details and 50% discount code.
+                `;
+                this.appendChild(successMessage);
+                
+                // Reset form after 5 seconds
+                setTimeout(() => {
+                    button.innerHTML = originalText;
+                    button.disabled = false;
+                    button.style.background = '';
+                    this.reset();
+                    if (successMessage.parentNode) {
+                        successMessage.remove();
+                    }
+                }, 5000);
+                
+            }, 2000);
         }
+
+        // Initialize Lucide icons
+        document.addEventListener('DOMContentLoaded', function() {
+            lucide.createIcons();
+        });
+
+        // Header scroll effect
+        window.addEventListener('scroll', function() {
+            const header = document.querySelector('.header');
+            if (window.scrollY > 100) {
+                header.style.background = 'rgba(255, 255, 255, 0.95)';
+                header.style.boxShadow = '0 1px 3px rgba(0, 0, 0, 0.1)';
+            } else {
+                header.style.background = 'rgba(255, 255, 255, 0.8)';
+                header.style.boxShadow = 'none';
+            }
+        });
+
+        // Add CSS animation for spinning loader
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes spin {
+                from { transform: rotate(0deg); }
+                to { transform: rotate(360deg); }
+            }
+        `;
+        document.head.appendChild(style);
     </script>
 </body>
 </html>
