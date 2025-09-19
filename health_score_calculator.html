@@ -3,283 +3,852 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Health Score Calculator - Wuksy</title>
+    <title>AI Health Score Calculator - WUKSY | Find Peace in Your Health Journey</title>
+    <meta name="description" content="Discover your personalized health optimization potential in 60 seconds with WUKSY's zen-inspired AI health score calculator.">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        
+
+        :root {
+            /* WUKSY Brand Colors */
+            --primary-50: #f6f8f6;
+            --primary-100: #e8f0e8;
+            --primary-200: #d3e4d3;
+            --primary-300: #b3d1b3;
+            --primary-400: #8bb88b;
+            --primary-500: #6b9d6b;
+            --primary-600: #5a8a5a;
+            --primary-700: #4a724a;
+            --primary-800: #3d5d3d;
+            --primary-900: #334d33;
+
+            --neutral-50: #fafafa;
+            --neutral-100: #f7f7f7;
+            --neutral-200: #f0f0f0;
+            --neutral-300: #e8e8e8;
+            --neutral-400: #d1d1d1;
+            --neutral-500: #a3a3a3;
+            --neutral-600: #737373;
+            --neutral-700: #525252;
+            --neutral-800: #404040;
+            --neutral-900: #262626;
+
+            --stone-50: #fafaf9;
+            --stone-100: #f5f5f4;
+            --stone-500: #78716c;
+            --stone-600: #57534e;
+        }
+
         body {
-            font-family: 'Arial', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
+            font-family: 'Inter', system-ui, sans-serif;
+            line-height: 1.6;
+            color: var(--neutral-800);
+            background-color: var(--neutral-50);
+            overflow-x: hidden;
         }
-        
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            overflow: hidden;
+
+        /* Zen-inspired animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
-        
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        @keyframes shimmer-calm {
+            0% { background-position: -1000px 0; }
+            100% { background-position: 1000px 0; }
+        }
+
+        .animate-fade-in-up {
+            animation: fadeInUp 0.8s ease-out forwards;
+        }
+
+        .animate-float {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .animate-shimmer-calm {
+            animation: shimmer-calm 3s infinite linear;
+        }
+
+        /* Typography */
+        .zen-text {
+            color: var(--primary-600);
+        }
+
+        .zen-gradient {
+            background: linear-gradient(135deg, var(--primary-50) 0%, var(--stone-50) 100%);
+        }
+
+        /* Header */
         .header {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            padding: 40px 30px;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(232, 232, 232, 0.5);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            transition: all 0.3s ease;
+        }
+
+        .header-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 4rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+            color: var(--neutral-800);
+        }
+
+        .logo-icon {
+            background: rgba(107, 157, 107, 0.1);
+            padding: 0.5rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-text {
+            font-size: 1.25rem;
+            font-weight: 500;
+            letter-spacing: -0.025em;
+        }
+
+        .logo-svg {
+            height: 2rem;
+            width: auto;
+            max-width: 120px;
+        }
+
+        /* Back button */
+        .back-link {
+            color: var(--neutral-600);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            transition: color 0.3s ease;
+        }
+
+        .back-link:hover {
+            color: var(--primary-600);
+        }
+
+        /* Hero Section */
+        .hero {
+            position: relative;
+            padding: 3rem 1rem 2rem;
             text-align: center;
-            color: white;
+            background: linear-gradient(135deg, var(--neutral-50) 0%, rgba(246, 248, 246, 0.5) 100%);
         }
-        
-        .header h1 {
+
+        .hero-container {
+            max-width: 48rem;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .hero-content {
+            opacity: 0;
+            animation: fadeInUp 0.8s ease-out 0.2s forwards;
+        }
+
+        .hero h1 {
             font-size: 2.5rem;
-            margin-bottom: 10px;
-            font-weight: 700;
+            font-weight: 300;
+            line-height: 1.1;
+            margin-bottom: 1rem;
+            color: var(--neutral-800);
         }
-        
-        .header p {
-            font-size: 1.1rem;
-            opacity: 0.9;
+
+        .hero .zen-text {
+            display: block;
+            font-weight: 500;
         }
-        
+
+        .hero p {
+            font-size: 1.125rem;
+            color: var(--neutral-600);
+            max-width: 32rem;
+            margin: 0 auto 2rem;
+            line-height: 1.6;
+        }
+
+        .calculator-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--primary-50);
+            color: var(--primary-700);
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 2rem;
+            border: 1px solid var(--primary-100);
+        }
+
+        /* Main Container */
+        .main-container {
+            max-width: 48rem;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        /* Form Container */
         .form-container {
-            padding: 40px 30px;
+            background: white;
+            border: 1px solid var(--neutral-200);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease-out 0.4s forwards;
         }
-        
+
+        /* Question Groups */
         .question-group {
-            margin-bottom: 25px;
-            padding: 20px;
-            border: 2px solid #f0f0f0;
-            border-radius: 12px;
-            transition: border-color 0.3s;
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: var(--neutral-50);
+            border: 1px solid var(--neutral-200);
+            border-radius: 0.75rem;
+            transition: all 0.3s ease;
         }
-        
+
         .question-group:hover {
-            border-color: #4facfe;
+            border-color: var(--primary-300);
+            background: var(--primary-50);
         }
-        
+
         .question-group label {
             display: block;
-            font-weight: 600;
-            margin-bottom: 12px;
-            color: #333;
-            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: var(--neutral-800);
+            font-size: 1.125rem;
         }
-        
+
+        /* Radio Groups */
         .radio-group {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
         }
-        
+
         .radio-option {
             display: flex;
             align-items: center;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
+            padding: 0.875rem 1rem;
+            background: white;
+            border: 1px solid var(--neutral-300);
+            border-radius: 0.5rem;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
+            position: relative;
         }
-        
+
         .radio-option:hover {
-            background: #f8f9ff;
-            border-color: #4facfe;
+            background: var(--primary-50);
+            border-color: var(--primary-400);
+            transform: translateY(-1px);
         }
-        
+
         .radio-option input[type="radio"] {
-            margin-right: 10px;
+            margin-right: 0.75rem;
+            accent-color: var(--primary-500);
         }
-        
+
         .radio-option input[type="radio"]:checked + label {
-            color: #4facfe;
-            font-weight: 600;
+            color: var(--primary-600);
+            font-weight: 500;
         }
-        
+
+        .radio-option input[type="radio"]:checked {
+            transform: scale(1.1);
+        }
+
+        .radio-option label {
+            margin: 0;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 400;
+        }
+
+        /* Slider Groups */
         .slider-group {
-            margin-top: 10px;
+            background: white;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            border: 1px solid var(--neutral-300);
         }
-        
+
         .slider {
             width: 100%;
             height: 8px;
             border-radius: 4px;
-            background: #ddd;
+            background: var(--neutral-200);
             outline: none;
             -webkit-appearance: none;
+            margin-bottom: 1rem;
         }
-        
+
         .slider::-webkit-slider-thumb {
             -webkit-appearance: none;
             appearance: none;
             width: 20px;
             height: 20px;
             border-radius: 50%;
-            background: #4facfe;
+            background: var(--primary-500);
             cursor: pointer;
+            box-shadow: 0 2px 4px rgba(107, 157, 107, 0.3);
+            transition: all 0.3s ease;
         }
-        
+
+        .slider::-webkit-slider-thumb:hover {
+            background: var(--primary-600);
+            transform: scale(1.1);
+        }
+
+        .slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary-500);
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 4px rgba(107, 157, 107, 0.3);
+        }
+
         .slider-value {
             text-align: center;
-            margin-top: 8px;
-            font-weight: 600;
-            color: #4facfe;
+            font-weight: 500;
+            color: var(--primary-600);
+            font-size: 1rem;
         }
-        
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 2rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            font-family: inherit;
+        }
+
+        .btn-primary {
+            background: var(--primary-500);
+            color: white;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-600);
+            box-shadow: 0 4px 12px rgba(107, 157, 107, 0.3);
+            transform: translateY(-1px);
+        }
+
         .calculate-btn {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
             color: white;
             border: none;
-            padding: 18px 40px;
-            font-size: 1.2rem;
+            padding: 1rem 2.5rem;
+            font-size: 1.125rem;
             font-weight: 600;
-            border-radius: 50px;
+            border-radius: 0.75rem;
             cursor: pointer;
-            transition: transform 0.3s;
+            transition: all 0.3s ease;
             display: block;
-            margin: 30px auto;
-            min-width: 200px;
+            margin: 2rem auto;
+            min-width: 280px;
+            position: relative;
+            overflow: hidden;
         }
-        
+
+        .calculate-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+        }
+
         .calculate-btn:hover {
+            background: linear-gradient(135deg, var(--primary-600), var(--primary-700));
             transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(107, 157, 107, 0.4);
         }
-        
+
+        .calculate-btn:hover::before {
+            left: 100%;
+        }
+
+        /* Results Section */
         .result-container {
             display: none;
+            background: white;
+            border: 1px solid var(--neutral-200);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
             text-align: center;
-            padding: 30px;
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            margin: 20px;
-            border-radius: 15px;
-            color: white;
+            animation: fadeInUp 0.8s ease-out forwards;
         }
-        
+
+        .score-display {
+            background: linear-gradient(135deg, var(--primary-50) 0%, var(--stone-50) 100%);
+            padding: 2rem;
+            border-radius: 1rem;
+            margin-bottom: 2rem;
+        }
+
         .score-circle {
             width: 120px;
             height: 120px;
             border-radius: 50%;
-            background: rgba(255,255,255,0.2);
+            background: var(--primary-500);
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 20px;
+            margin: 0 auto 1rem;
             font-size: 2.5rem;
-            font-weight: 700;
+            font-weight: 300;
+            color: white;
+            box-shadow: 0 8px 25px rgba(107, 157, 107, 0.3);
+            animation: float 3s ease-in-out infinite;
         }
-        
+
+        .score-title {
+            font-size: 1.5rem;
+            font-weight: 500;
+            color: var(--neutral-800);
+            margin-bottom: 0.5rem;
+        }
+
+        .score-category {
+            color: var(--primary-600);
+            font-weight: 500;
+            font-size: 1.125rem;
+            margin-bottom: 1rem;
+        }
+
+        .score-description {
+            color: var(--neutral-600);
+            line-height: 1.6;
+            max-width: 32rem;
+            margin: 0 auto;
+        }
+
+        /* Recommendations */
         .recommendations {
-            background: #f8f9fa;
-            margin: 20px 0;
-            padding: 25px;
-            border-radius: 12px;
+            background: var(--neutral-50);
+            margin: 2rem 0;
+            padding: 2rem;
+            border-radius: 1rem;
             text-align: left;
-            color: #333;
+            border: 1px solid var(--neutral-200);
         }
-        
+
         .recommendations h3 {
-            color: #4facfe;
-            margin-bottom: 15px;
+            color: var(--primary-600);
+            margin-bottom: 1.5rem;
+            font-size: 1.25rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
-        
+
         .recommendations ul {
             list-style: none;
             padding: 0;
         }
-        
+
         .recommendations li {
-            padding: 8px 0;
-            border-bottom: 1px solid #eee;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--neutral-200);
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            color: var(--neutral-700);
         }
-        
-        .recommendations li:before {
+
+        .recommendations li:last-child {
+            border-bottom: none;
+        }
+
+        .recommendations li::before {
             content: "✓";
-            color: #4facfe;
-            font-weight: bold;
-            margin-right: 10px;
+            color: var(--primary-500);
+            font-weight: 600;
+            font-size: 1.125rem;
+            flex-shrink: 0;
+            margin-top: 0.125rem;
         }
-        
+
+        /* Health Score Categories */
+        .health-score-poor { 
+            background: #fef2f2; 
+            color: #b91c1c; 
+            border-color: #fecaca; 
+        }
+
+        .health-score-fair { 
+            background: #fffbeb; 
+            color: #d97706; 
+            border-color: #fed7aa; 
+        }
+
+        .health-score-good { 
+            background: var(--primary-50); 
+            color: var(--primary-700); 
+            border-color: var(--primary-100); 
+        }
+
+        .health-score-excellent { 
+            background: #ecfdf5; 
+            color: #059669; 
+            border-color: #a7f3d0; 
+        }
+
+        /* CTA Section */
         .cta-section {
-            background: #1a1a1a;
-            color: white;
-            padding: 40px 30px;
+            background: linear-gradient(135deg, var(--primary-50) 0%, var(--stone-50) 100%);
+            padding: 3rem 2rem;
+            border-radius: 1rem;
             text-align: center;
+            margin-bottom: 2rem;
+            border: 1px solid var(--primary-100);
         }
-        
+
         .cta-section h2 {
-            margin-bottom: 15px;
-            font-size: 1.8rem;
+            font-size: 1.875rem;
+            font-weight: 300;
+            color: var(--neutral-800);
+            margin-bottom: 1rem;
         }
-        
+
         .cta-section p {
-            margin-bottom: 25px;
-            opacity: 0.9;
+            font-size: 1.125rem;
+            color: var(--neutral-600);
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
         }
-        
+
+        .early-bird-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 2rem;
+            border: 1px solid var(--primary-400);
+        }
+
         .signup-form {
             display: flex;
-            gap: 10px;
-            max-width: 400px;
-            margin: 0 auto;
-            flex-wrap: wrap;
+            flex-direction: column;
+            gap: 1rem;
+            max-width: 24rem;
+            margin: 0 auto 1.5rem;
         }
-        
-        .signup-form input {
+
+        @media (min-width: 640px) {
+            .signup-form {
+                flex-direction: row;
+            }
+        }
+
+        .signup-input {
             flex: 1;
-            padding: 15px;
-            border: none;
-            border-radius: 8px;
+            padding: 0.875rem 1rem;
+            border: 1px solid var(--neutral-300);
+            border-radius: 0.5rem;
             font-size: 1rem;
+            transition: all 0.3s ease;
+            font-family: inherit;
         }
-        
+
+        .signup-input:focus {
+            outline: none;
+            border-color: var(--primary-500);
+            box-shadow: 0 0 0 3px rgba(107, 157, 107, 0.1);
+        }
+
         .signup-btn {
-            background: #4facfe;
+            background: linear-gradient(135deg, var(--primary-600), var(--primary-700));
             color: white;
             border: none;
-            padding: 15px 25px;
-            border-radius: 8px;
+            padding: 0.875rem 2rem;
+            border-radius: 0.5rem;
             cursor: pointer;
             font-weight: 600;
-            transition: background 0.3s;
+            transition: all 0.3s ease;
+            font-family: inherit;
         }
-        
+
         .signup-btn:hover {
-            background: #2196f3;
+            background: linear-gradient(135deg, var(--primary-700), var(--primary-800));
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(107, 157, 107, 0.3);
         }
-        
-        @media (max-width: 768px) {
-            .header h1 {
-                font-size: 1.8rem;
+
+        .trust-signals {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .trust-signal {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--neutral-600);
+            font-size: 0.875rem;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--neutral-900);
+            color: white;
+            padding: 3rem 1rem 2rem;
+        }
+
+        .footer-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            text-align: center;
+            padding: 0 2rem;
+        }
+
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .footer-logo-icon {
+            background: rgba(107, 157, 107, 0.2);
+            padding: 0.5rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .footer-icon-svg {
+            height: 1.5rem;
+            width: auto;
+            margin-right: 0.5rem;
+        }
+
+        .footer p {
+            color: var(--neutral-400);
+            margin-bottom: 1rem;
+        }
+
+        .medical-disclaimer {
+            border-top: 1px solid var(--neutral-700);
+            padding-top: 2rem;
+            margin-top: 2rem;
+            font-size: 0.875rem;
+            color: var(--neutral-500);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 640px) {
+            .hero {
+                padding: 2rem 1rem;
             }
-            
+
+            .hero h1 {
+                font-size: 2rem;
+            }
+
             .form-container {
-                padding: 20px 15px;
+                padding: 1.5rem;
+                margin: 0 0.5rem 2rem;
             }
-            
+
             .question-group {
-                padding: 15px;
+                padding: 1rem;
             }
-            
+
+            .main-container {
+                padding: 0 0.5rem;
+            }
+
+            .header-container {
+                padding: 0 1rem;
+            }
+
+            .calculate-btn {
+                min-width: 240px;
+                font-size: 1rem;
+                padding: 0.875rem 2rem;
+            }
+
+            .cta-section {
+                padding: 2rem 1.5rem;
+                margin: 0 0.5rem 2rem;
+            }
+        }
+
+        @media (min-width: 768px) {
+            .hero h1 {
+                font-size: 3rem;
+            }
+
             .signup-form {
-                flex-direction: column;
+                flex-direction: row;
+                gap: 0.5rem;
             }
-            
-            .signup-form input {
-                margin-bottom: 10px;
+
+            .signup-input {
+                flex: 1;
             }
+
+            .signup-btn {
+                width: auto;
+                padding: 0.875rem 2rem;
+            }
+        }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--neutral-100);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--neutral-400);
+            border-radius: 2px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--neutral-500);
+        }
+
+        /* Loading states */
+        .loading {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        .loading .calculate-btn {
+            background: var(--neutral-400);
+        }
+
+        /* Success states */
+        .success-message {
+            background: var(--primary-600);
+            color: white;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-top: 1rem;
+            text-align: center;
+            animation: fadeInUp 0.5s ease-out;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>🧬 AI Health Score</h1>
-            <p>Discover your personalized health optimization potential in 60 seconds</p>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-container">
+            <a href="index.html" class="logo">
+                <img src="logo_clean.svg" alt="WUKSY" class="logo-svg" />
+            </a>
+            <a href="index.html" class="back-link">
+                <i data-lucide="arrow-left" width="16" height="16"></i>
+                Back to Home
+            </a>
         </div>
-        
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-container">
+            <div class="hero-content">
+                <div class="calculator-badge animate-float">
+                    <i data-lucide="activity" width="16" height="16"></i>
+                    <span>AI Health Assessment</span>
+                </div>
+                
+                <h1>
+                    Discover Your
+                    <span class="zen-text">Health Score</span>
+                </h1>
+                
+                <p>
+                    Find peace in understanding your wellness journey. 
+                    Get personalized insights in 60 seconds with our zen-inspired health assessment.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <div class="main-container">
+        <!-- Form Container -->
         <div class="form-container">
             <form id="healthForm">
                 <div class="question-group">
@@ -309,15 +878,15 @@
                 </div>
 
                 <div class="question-group">
-                    <label>How would you rate your energy levels?</label>
+                    <label>How would you describe your energy levels?</label>
                     <div class="radio-group">
                         <div class="radio-option">
                             <input type="radio" name="energy" value="5" id="energy1">
-                            <label for="energy1">Excellent - I'm always energized</label>
+                            <label for="energy1">Excellent - I feel vibrant and energized</label>
                         </div>
                         <div class="radio-option">
                             <input type="radio" name="energy" value="4" id="energy2">
-                            <label for="energy2">Good - Usually feel energetic</label>
+                            <label for="energy2">Good - Usually feel energetic throughout the day</label>
                         </div>
                         <div class="radio-option">
                             <input type="radio" name="energy" value="3" id="energy3">
@@ -325,17 +894,17 @@
                         </div>
                         <div class="radio-option">
                             <input type="radio" name="energy" value="2" id="energy4">
-                            <label for="energy4">Low - Often feel tired or sluggish</label>
+                            <label for="energy4">Low - Often feel tired or need caffeine</label>
                         </div>
                         <div class="radio-option">
                             <input type="radio" name="energy" value="1" id="energy5">
-                            <label for="energy5">Very low - Constantly exhausted</label>
+                            <label for="energy5">Very low - Constantly exhausted despite rest</label>
                         </div>
                     </div>
                 </div>
 
                 <div class="question-group">
-                    <label>How often do you exercise per week?</label>
+                    <label>How often do you engage in physical activity?</label>
                     <div class="slider-group">
                         <input type="range" min="0" max="7" value="3" class="slider" id="exercise" name="exercise">
                         <div class="slider-value" id="exerciseValue">3 times per week</div>
@@ -343,33 +912,33 @@
                 </div>
 
                 <div class="question-group">
-                    <label>How would you describe your diet?</label>
+                    <label>How would you describe your nutrition approach?</label>
                     <div class="radio-group">
                         <div class="radio-option">
                             <input type="radio" name="diet" value="5" id="diet1">
-                            <label for="diet1">Excellent - Balanced, whole foods, minimal processed</label>
+                            <label for="diet1">Mindful - Whole foods, balanced, intuitive eating</label>
                         </div>
                         <div class="radio-option">
                             <input type="radio" name="diet" value="4" id="diet2">
-                            <label for="diet2">Good - Mostly healthy with occasional treats</label>
+                            <label for="diet2">Good - Mostly healthy with mindful indulgences</label>
                         </div>
                         <div class="radio-option">
                             <input type="radio" name="diet" value="3" id="diet3">
-                            <label for="diet3">Average - Mix of healthy and unhealthy foods</label>
+                            <label for="diet3">Average - Mix of healthy and convenience foods</label>
                         </div>
                         <div class="radio-option">
                             <input type="radio" name="diet" value="2" id="diet4">
-                            <label for="diet4">Poor - Lots of processed foods and fast food</label>
+                            <label for="diet4">Poor - Frequent processed foods and fast meals</label>
                         </div>
                         <div class="radio-option">
                             <input type="radio" name="diet" value="1" id="diet5">
-                            <label for="diet5">Very poor - Mostly processed, little nutrition</label>
+                            <label for="diet5">Concerning - Mostly processed with little nutrition</label>
                         </div>
                     </div>
                 </div>
 
                 <div class="question-group">
-                    <label>How many hours of quality sleep do you get?</label>
+                    <label>How many hours of restorative sleep do you get?</label>
                     <div class="slider-group">
                         <input type="range" min="4" max="10" value="7" class="slider" id="sleep" name="sleep">
                         <div class="slider-value" id="sleepValue">7 hours per night</div>
@@ -377,94 +946,149 @@
                 </div>
 
                 <div class="question-group">
-                    <label>How would you rate your stress levels?</label>
+                    <label>How do you experience stress in your daily life?</label>
                     <div class="radio-group">
                         <div class="radio-option">
                             <input type="radio" name="stress" value="5" id="stress1">
-                            <label for="stress1">Very low - I feel calm and in control</label>
+                            <label for="stress1">Peaceful - I feel calm and centered most days</label>
                         </div>
                         <div class="radio-option">
                             <input type="radio" name="stress" value="4" id="stress2">
-                            <label for="stress2">Low - Occasional stress but manageable</label>
+                            <label for="stress2">Manageable - Occasional stress with good coping</label>
                         </div>
                         <div class="radio-option">
                             <input type="radio" name="stress" value="3" id="stress3">
-                            <label for="stress3">Moderate - Regular stress that I cope with</label>
+                            <label for="stress3">Moderate - Regular stress that I manage adequately</label>
                         </div>
                         <div class="radio-option">
                             <input type="radio" name="stress" value="2" id="stress4">
-                            <label for="stress4">High - Frequently overwhelmed</label>
+                            <label for="stress4">High - Frequently feel overwhelmed or anxious</label>
                         </div>
                         <div class="radio-option">
                             <input type="radio" name="stress" value="1" id="stress5">
-                            <label for="stress5">Very high - Constantly stressed and anxious</label>
+                            <label for="stress5">Very high - Constantly stressed and struggling</label>
                         </div>
                     </div>
                 </div>
 
                 <div class="question-group">
-                    <label>Do you currently take any supplements?</label>
+                    <label>What's your approach to wellness support?</label>
                     <div class="radio-group">
                         <div class="radio-option">
                             <input type="radio" name="supplements" value="3" id="supp1">
-                            <label for="supp1">Yes, based on blood test results</label>
+                            <label for="supp1">Personalized - Based on blood work and professional guidance</label>
                         </div>
                         <div class="radio-option">
                             <input type="radio" name="supplements" value="2" id="supp2">
-                            <label for="supp2">Yes, but just general vitamins</label>
+                            <label for="supp2">Basic - General vitamins and minerals</label>
                         </div>
                         <div class="radio-option">
                             <input type="radio" name="supplements" value="1" id="supp3">
-                            <label for="supp3">No, but I'm interested</label>
+                            <label for="supp3">Curious - Interested in learning more</label>
                         </div>
                         <div class="radio-option">
                             <input type="radio" name="supplements" value="0" id="supp4">
-                            <label for="supp4">No, and not interested</label>
+                            <label for="supp4">Natural approach - Prefer food-based nutrition only</label>
                         </div>
                     </div>
                 </div>
 
                 <button type="button" class="calculate-btn" onclick="calculateScore()">
-                    🔬 Calculate My Health Score
+                    <i data-lucide="sparkles" width="20" height="20"></i>
+                    Calculate My Health Score
                 </button>
             </form>
 
+            <!-- Results Container -->
             <div class="result-container" id="resultContainer">
-                <div class="score-circle" id="scoreCircle">
-                    85
+                <div class="score-display">
+                    <div class="score-circle" id="scoreCircle">85</div>
+                    <div class="score-title" id="scoreTitle">Your Health Score</div>
+                    <div class="score-category" id="scoreCategory">Good</div>
+                    <div class="score-description" id="scoreDescription">
+                        Based on your responses, here's your current health optimization potential
+                    </div>
                 </div>
-                <h2 id="scoreTitle">Your Health Score</h2>
-                <p id="scoreDescription">Based on your responses, here's your current health optimization potential</p>
                 
                 <div class="recommendations" id="recommendations">
-                    <h3>🎯 Your Personalized Recommendations</h3>
-                    <ul id="recommendationsList">
-                    </ul>
+                    <h3>
+                        <i data-lucide="leaf" width="20" height="20"></i>
+                        Your Personalized Wellness Insights
+                    </h3>
+                    <ul id="recommendationsList"></ul>
                 </div>
             </div>
         </div>
-        
+
+        <!-- CTA Section -->
         <div class="cta-section">
-            <h2>🚀 Ready to Unlock Your Full Health Potential?</h2>
-            <p>Get AI-powered blood analysis and personalized supplement recommendations when Wuksy launches</p>
-            <p><strong>Early Bird Bonus: 50% off your first analysis</strong></p>
+            <div class="early-bird-badge">
+                <i data-lucide="gift" width="16" height="16"></i>
+                <span>50% OFF Early Access</span>
+            </div>
+            
+            <h2>Ready to Transform Your <span class="zen-text">Wellness Journey?</span></h2>
+            <p>Get AI-powered blood analysis and personalized supplement recommendations when WUKSY launches</p>
+            <p style="font-weight: 500; color: var(--primary-700);">Join our early access community and save 50% on your first comprehensive analysis</p>
             
             <form class="signup-form" id="signupForm">
-                <input type="email" placeholder="Enter your email address" required id="emailInput">
-                <button type="submit" class="signup-btn">Join Waitlist</button>
+                <input type="email" class="signup-input" placeholder="Enter your email to join early access" required id="emailInput">
+                <button type="submit" class="signup-btn">
+                    <i data-lucide="leaf" width="16" height="16"></i>
+                    Join Early Access
+                </button>
             </form>
             
-            <p style="margin-top: 15px; font-size: 0.9rem; opacity: 0.7;">
-                🔒 Your email is secure. We'll only send you updates about Wuksy.
-            </p>
+            <div class="trust-signals">
+                <div class="trust-signal">
+                    <i data-lucide="shield-check" width="14" height="14"></i>
+                    <span>100% Secure & Private</span>
+                </div>
+                <div class="trust-signal">
+                    <i data-lucide="users" width="14" height="14"></i>
+                    <span>2,800+ Members Joined</span>
+                </div>
+                <div class="trust-signal">
+                    <i data-lucide="mail" width="14" height="14"></i>
+                    <span>No Spam, Ever</span>
+                </div>
+            </div>
         </div>
     </div>
 
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-logo">
+                <img src="icon.svg" alt="WUKSY Icon" class="footer-icon-svg" />
+                <span style="font-size: 1.25rem; font-weight: 500; color: white;">WUKSY</span>
+            </div>
+            
+            <p>AI-Powered Personalized Wellness Platform</p>
+            
+            <div class="medical-disclaimer">
+                <p>
+                    <strong>Medical Disclaimer:</strong> WUKSY provides educational information only and is not intended to diagnose, treat, cure, or prevent any disease. 
+                    Always consult with qualified healthcare professionals before making health decisions.
+                </p>
+                <p style="margin-top: 1rem;">
+                    © 2024 WUKSY. All rights reserved.
+                </p>
+            </div>
+        </div>
+    </footer>
+
     <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
         // Update slider values
         document.getElementById('exercise').oninput = function() {
             const value = this.value;
-            document.getElementById('exerciseValue').textContent = value + ' times per week';
+            let text = value + ' times per week';
+            if (value == 0) text = 'No regular exercise';
+            if (value == 1) text = '1 time per week';
+            document.getElementById('exerciseValue').textContent = text;
         }
 
         document.getElementById('sleep').oninput = function() {
@@ -472,127 +1096,221 @@
             document.getElementById('sleepValue').textContent = value + ' hours per night';
         }
 
+        // Header scroll effect
+        window.addEventListener('scroll', function() {
+            const header = document.querySelector('.header');
+            if (window.scrollY > 100) {
+                header.style.background = 'rgba(255, 255, 255, 0.95)';
+                header.style.boxShadow = '0 1px 3px rgba(0, 0, 0, 0.1)';
+            } else {
+                header.style.background = 'rgba(255, 255, 255, 0.8)';
+                header.style.boxShadow = 'none';
+            }
+        });
+
         function calculateScore() {
             const form = document.getElementById('healthForm');
             const formData = new FormData(form);
             
-            let totalScore = 0;
-            let maxScore = 0;
+            // Add loading state
+            const button = document.querySelector('.calculate-btn');
+            const originalText = button.innerHTML;
+            button.innerHTML = '<i data-lucide="loader-2" width="20" height="20" style="animation: spin 1s linear infinite;"></i> Calculating...';
+            button.disabled = true;
             
-            // Age (weight: 1)
-            const age = parseInt(formData.get('age')) || 0;
-            totalScore += age;
-            maxScore += 5;
-            
-            // Energy (weight: 2)
-            const energy = parseInt(formData.get('energy')) || 0;
-            totalScore += energy * 2;
-            maxScore += 10;
-            
-            // Exercise (weight: 2)
-            const exercise = Math.min(parseInt(formData.get('exercise')) || 0, 5);
-            totalScore += exercise * 2;
-            maxScore += 10;
-            
-            // Diet (weight: 2)
-            const diet = parseInt(formData.get('diet')) || 0;
-            totalScore += diet * 2;
-            maxScore += 10;
-            
-            // Sleep (weight: 1.5)
-            const sleep = Math.max(0, Math.min(5, (parseInt(formData.get('sleep')) - 4) * 1.25));
-            totalScore += sleep * 1.5;
-            maxScore += 7.5;
-            
-            // Stress (weight: 1.5)
-            const stress = parseInt(formData.get('stress')) || 0;
-            totalScore += stress * 1.5;
-            maxScore += 7.5;
-            
-            // Supplements (weight: 0.5)
-            const supplements = parseInt(formData.get('supplements')) || 0;
-            totalScore += supplements * 0.5;
-            maxScore += 1.5;
-            
-            // Calculate percentage
-            const percentage = Math.round((totalScore / maxScore) * 100);
-            
-            // Display results
-            document.getElementById('scoreCircle').textContent = percentage;
-            document.getElementById('scoreTitle').textContent = `Your Health Score: ${percentage}/100`;
-            
-            let category, description, recommendations;
-            
-            if (percentage >= 80) {
-                category = "Excellent";
-                description = "Outstanding! You're already on a great health trajectory. Fine-tuning with blood analysis could help you reach peak optimization.";
-                recommendations = [
-                    "Consider advanced biomarker testing to optimize performance",
-                    "Track micronutrient levels for enhanced energy",
-                    "Explore personalized supplement stacks",
-                    "Monitor inflammatory markers for longevity"
-                ];
-            } else if (percentage >= 65) {
-                category = "Good";
-                description = "Great foundation! You have solid health habits with room for targeted improvements through data-driven insights.";
-                recommendations = [
-                    "Blood analysis could reveal hidden deficiencies",
-                    "Optimize vitamin D and B-complex levels",
-                    "Consider magnesium and omega-3 supplementation",
-                    "Track metabolic markers for energy improvement"
-                ];
-            } else if (percentage >= 45) {
-                category = "Fair";
-                description = "You're on the right track but there's significant room for improvement. Personalized recommendations could make a huge difference.";
-                recommendations = [
-                    "Comprehensive blood panel to identify key deficiencies",
-                    "Address potential vitamin B12 and iron deficiencies",
-                    "Optimize sleep and stress management strategies",
-                    "Personalized nutrition plan based on biomarkers"
-                ];
-            } else {
-                category = "Needs Improvement";
-                description = "There's tremendous opportunity to improve your health! Blood analysis and personalized recommendations could be life-changing.";
-                recommendations = [
-                    "Full metabolic panel to identify critical issues",
-                    "Address potential multiple nutrient deficiencies",
-                    "Implement gradual lifestyle changes with AI guidance",
-                    "Create personalized supplement protocol"
-                ];
-            }
-            
-            document.getElementById('scoreDescription').textContent = description;
-            
-            const recommendationsList = document.getElementById('recommendationsList');
-            recommendationsList.innerHTML = '';
-            recommendations.forEach(rec => {
-                const li = document.createElement('li');
-                li.textContent = rec;
-                recommendationsList.appendChild(li);
-            });
-            
-            document.getElementById('resultContainer').style.display = 'block';
-            document.getElementById('resultContainer').scrollIntoView({ behavior: 'smooth' });
+            setTimeout(() => {
+                let totalScore = 0;
+                let maxScore = 0;
+                
+                // Age (weight: 1)
+                const age = parseInt(formData.get('age')) || 0;
+                totalScore += age;
+                maxScore += 5;
+                
+                // Energy (weight: 2)
+                const energy = parseInt(formData.get('energy')) || 0;
+                totalScore += energy * 2;
+                maxScore += 10;
+                
+                // Exercise (weight: 2)
+                const exercise = Math.min(parseInt(formData.get('exercise')) || 0, 5);
+                totalScore += exercise * 2;
+                maxScore += 10;
+                
+                // Diet (weight: 2)
+                const diet = parseInt(formData.get('diet')) || 0;
+                totalScore += diet * 2;
+                maxScore += 10;
+                
+                // Sleep (weight: 1.5)
+                const sleep = Math.max(0, Math.min(5, (parseInt(formData.get('sleep')) - 4) * 1.25));
+                totalScore += sleep * 1.5;
+                maxScore += 7.5;
+                
+                // Stress (weight: 1.5)
+                const stress = parseInt(formData.get('stress')) || 0;
+                totalScore += stress * 1.5;
+                maxScore += 7.5;
+                
+                // Supplements (weight: 0.5)
+                const supplements = parseInt(formData.get('supplements')) || 0;
+                totalScore += supplements * 0.5;
+                maxScore += 1.5;
+                
+                // Calculate percentage
+                const percentage = Math.round((totalScore / maxScore) * 100);
+                
+                // Display results
+                document.getElementById('scoreCircle').textContent = percentage;
+                document.getElementById('scoreTitle').textContent = `Your Health Score: ${percentage}/100`;
+                
+                let category, description, recommendations, scoreClass;
+                
+                if (percentage >= 80) {
+                    category = "Excellent";
+                    scoreClass = "health-score-excellent";
+                    description = "Outstanding! You're radiating wellness and vitality. Your mindful approach to health is truly inspiring. Fine-tuning with personalized insights could help you reach even greater heights of well-being.";
+                    recommendations = [
+                        "Consider advanced biomarker testing to optimize your already excellent foundation",
+                        "Explore personalized micronutrient analysis for peak performance",
+                        "Track inflammatory markers to support long-term vitality",
+                        "Investigate genetic insights for precision wellness optimization"
+                    ];
+                } else if (percentage >= 65) {
+                    category = "Good";
+                    scoreClass = "health-score-good";
+                    description = "Wonderful foundation! You've cultivated solid wellness habits with beautiful potential for growth. Data-driven insights could help you discover hidden opportunities for enhanced vitality.";
+                    recommendations = [
+                        "Blood analysis could reveal subtle imbalances affecting your energy",
+                        "Optimize key nutrients like vitamin D, B-complex, and magnesium",
+                        "Consider omega-3 fatty acid levels for cognitive and heart health",
+                        "Track metabolic markers to fine-tune your wellness approach"
+                    ];
+                } else if (percentage >= 45) {
+                    category = "Fair";
+                    scoreClass = "health-score-fair";
+                    description = "You're on a meaningful wellness journey with significant opportunities ahead. Personalized insights could illuminate the path to feeling truly vibrant and energized.";
+                    recommendations = [
+                        "Comprehensive blood panel to identify key areas for improvement",
+                        "Address potential B-vitamin and mineral deficiencies affecting energy",
+                        "Optimize sleep quality and stress management with targeted support",
+                        "Create a personalized nutrition plan based on your unique biomarkers"
+                    ];
+                } else {
+                    category = "Needs Attention";
+                    scoreClass = "health-score-poor";
+                    description = "Your body is calling for gentle, loving attention. This is a beautiful opportunity for transformation! Personalized blood analysis and caring guidance could be the key to unlocking your vitality.";
+                    recommendations = [
+                        "Full metabolic panel to understand your body's current needs",
+                        "Address potential multiple nutrient deficiencies with precision",
+                        "Implement gentle, sustainable lifestyle changes with AI guidance",
+                        "Create a comprehensive, personalized supplement and lifestyle protocol"
+                    ];
+                }
+                
+                // Apply score category styling
+                const scoreDisplay = document.querySelector('.score-display');
+                scoreDisplay.className = `score-display ${scoreClass}`;
+                
+                document.getElementById('scoreCategory').textContent = category;
+                document.getElementById('scoreDescription').textContent = description;
+                
+                const recommendationsList = document.getElementById('recommendationsList');
+                recommendationsList.innerHTML = '';
+                recommendations.forEach(rec => {
+                    const li = document.createElement('li');
+                    li.textContent = rec;
+                    recommendationsList.appendChild(li);
+                });
+                
+                // Reset button
+                button.innerHTML = originalText;
+                button.disabled = false;
+                
+                // Show results
+                document.getElementById('resultContainer').style.display = 'block';
+                document.getElementById('resultContainer').scrollIntoView({ 
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+                
+                // Reinitialize icons
+                lucide.createIcons();
+                
+            }, 2000);
         }
 
         // Handle signup
         document.getElementById('signupForm').onsubmit = function(e) {
             e.preventDefault();
             const email = document.getElementById('emailInput').value;
+            const button = this.querySelector('.signup-btn');
+            const originalText = button.innerHTML;
             
-            // Here you would typically send to your email service
-            alert('Thanks for joining the waitlist! We\'ll notify you as soon as Wuksy launches with your exclusive 50% discount.');
+            // Show loading state
+            button.innerHTML = '<i data-lucide="loader-2" width="16" height="16" style="animation: spin 1s linear infinite;"></i> Joining...';
+            button.disabled = true;
             
-            // Reset form
-            this.reset();
+            setTimeout(() => {
+                // Success state
+                button.innerHTML = '<i data-lucide="check" width="16" height="16"></i> Welcome!';
+                button.style.background = '#10b981';
+                
+                // Show success message
+                const successMessage = document.createElement('div');
+                successMessage.className = 'success-message';
+                successMessage.innerHTML = `
+                    <strong>🌱 Welcome to your wellness journey!</strong><br>
+                    Check your email for early access details and your exclusive 50% discount.
+                `;
+                this.appendChild(successMessage);
+                
+                // Reset form after delay
+                setTimeout(() => {
+                    button.innerHTML = originalText;
+                    button.disabled = false;
+                    button.style.background = '';
+                    this.reset();
+                    if (successMessage.parentNode) {
+                        successMessage.remove();
+                    }
+                }, 4000);
+                
+            }, 1500);
         }
 
         // Add click handlers for radio options
         document.querySelectorAll('.radio-option').forEach(option => {
             option.onclick = function() {
                 const radio = this.querySelector('input[type="radio"]');
-                radio.checked = true;
+                if (radio) {
+                    radio.checked = true;
+                }
             }
+        });
+
+        // Add CSS animation for spinning loader
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes spin {
+                from { transform: rotate(0deg); }
+                to { transform: rotate(360deg); }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
         });
     </script>
 </body>
