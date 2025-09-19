@@ -450,7 +450,7 @@
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 2rem;
-            align-items: flex-end;
+            align-items: start;
             margin: 2rem 0;
             padding: 2rem;
             background: linear-gradient(135deg, var(--primary-50), rgba(107, 157, 107, 0.05));
@@ -513,7 +513,8 @@
 
         .button-section {
             display: flex;
-            align-items: flex-end;
+            align-items: flex-start;
+            margin-top: 1.75rem; /* Align with input field (label + margin) */
         }
 
         .calculate-btn {
@@ -580,6 +581,7 @@
 
         .form-step.active {
             display: block;
+            opacity: 1 !important;
             animation: fadeInUp 0.5s ease-out;
         }
 
@@ -1318,31 +1320,35 @@
         // Initialize Lucide icons
         lucide.createIcons();
 
+        // Stepped Form Variables - moved to top to prevent hoisting issues
+        let currentStep = 1;
+        const totalSteps = 8;
+        const stepTitles = [
+            "Let's start with your age range",
+            "Tell us about your energy levels",
+            "How often do you exercise?",
+            "Describe your nutrition approach",
+            "How much sleep do you get?",
+            "How do you manage stress?",
+            "What's your wellness approach?",
+            "Almost done! Enter your email"
+        ];
+
         // Email validation function (fallback if WUKSY not loaded yet)
         function isValidEmail(email) {
-            if (typeof WUKSY !== 'undefined' && WUKSY.isValidEmail) {
-                return WUKSY.isValidEmail(email);
+            try {
+                if (typeof WUKSY !== 'undefined' && WUKSY.isValidEmail) {
+                    return WUKSY.isValidEmail(email);
+                }
+            } catch (error) {
+                console.warn('WUKSY email validation not available:', error);
             }
             // Fallback email validation
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             return emailRegex.test(email);
         }
 
-        // Update slider values
-        document.getElementById('exercise').oninput = function() {
-            const value = this.value;
-            let text = value + ' times per week';
-            if (value == 0) text = 'No regular exercise';
-            if (value == 1) text = '1 time per week';
-            document.getElementById('exerciseValue').textContent = text;
-            updateProgress();
-        }
-
-        document.getElementById('sleep').oninput = function() {
-            const value = this.value;
-            document.getElementById('sleepValue').textContent = value + ' hours per night';
-            updateProgress();
-        }
+        // Slider event handlers will be set up in DOMContentLoaded
 
         // Header scroll effect
         window.addEventListener('scroll', function() {
@@ -1594,19 +1600,7 @@
             }
         });
 
-        // Stepped Form Variables
-        let currentStep = 1;
-        const totalSteps = 8;
-        const stepTitles = [
-            "Let's start with your age range",
-            "Tell us about your energy levels",
-            "How often do you exercise?",
-            "Describe your nutrition approach",
-            "How much sleep do you get?",
-            "How do you manage stress?",
-            "What's your wellness approach?",
-            "Almost done! Enter your email"
-        ];
+        // Variables moved to top of script section
 
         // Step Navigation Functions
         function updateProgress() {
@@ -1635,21 +1629,35 @@
         }
 
         function showStep(stepNumber) {
+            console.log(`Health Calculator: Showing step ${stepNumber}`);
+            // Update current step
+            currentStep = stepNumber;
+            
             // Hide all steps
             document.querySelectorAll('.form-step').forEach(step => {
                 step.classList.remove('active');
             });
             
             // Show current step
-            document.getElementById(`step${stepNumber}`).classList.add('active');
+            const targetStep = document.getElementById(`step${stepNumber}`);
+            if (targetStep) {
+                targetStep.classList.add('active');
+                console.log(`Health Calculator: Step ${stepNumber} is now active`);
+            } else {
+                console.error(`Health Calculator: Step ${stepNumber} not found`);
+            }
             
             updateProgress();
         }
 
         function nextStep() {
+            console.log(`Health Calculator: nextStep() called, current: ${currentStep}, valid: ${isCurrentStepValid()}`);
             if (currentStep < totalSteps && isCurrentStepValid()) {
                 currentStep++;
+                console.log(`Health Calculator: Moving to step ${currentStep}`);
                 showStep(currentStep);
+            } else {
+                console.log(`Health Calculator: Cannot advance - at step ${currentStep}, valid: ${isCurrentStepValid()}`);
             }
         }
 
@@ -1672,9 +1680,14 @@
                 const radios = currentStepElement.querySelectorAll('input[type="radio"]');
                 const sliders = currentStepElement.querySelectorAll('input[type="range"]');
                 
+                console.log(`Health Calculator: Validating step ${currentStep} - radios: ${radios.length}, sliders: ${sliders.length}`);
+                
                 if (radios.length > 0) {
-                    return Array.from(radios).some(radio => radio.checked);
+                    const isValid = Array.from(radios).some(radio => radio.checked);
+                    console.log(`Health Calculator: Radio step ${currentStep} valid: ${isValid}`);
+                    return isValid;
                 } else if (sliders.length > 0) {
+                    console.log(`Health Calculator: Slider step ${currentStep} valid: true (always valid)`);
                     return true; // Sliders always have a value
                 }
             }
@@ -1682,6 +1695,8 @@
         }
 
         function selectOption(element, name, value) {
+            console.log(`Health Calculator: selectOption called for ${name} = ${value} on step ${currentStep}`);
+            
             // Remove selected class from all options in this group
             const options = element.parentElement.querySelectorAll('.radio-option');
             options.forEach(opt => opt.classList.remove('selected'));
@@ -1698,14 +1713,44 @@
             
             // Auto-advance after a short delay for radio button questions (not email step)
             if (currentStep < 8 && isCurrentStepValid()) {
+                console.log(`Health Calculator: Auto-advancing from step ${currentStep} in 800ms`);
                 setTimeout(() => {
                     nextStep();
                 }, 800);
+            } else {
+                console.log(`Health Calculator: No auto-advance from step ${currentStep}`);
             }
         }
 
         // Initialize stepped form
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('Health Calculator: DOM loaded, initializing...');
+            
+            // Set up slider event handlers
+            const exerciseSlider = document.getElementById('exercise');
+            const sleepSlider = document.getElementById('sleep');
+            
+            if (exerciseSlider) {
+                exerciseSlider.oninput = function() {
+                    const value = this.value;
+                    let text = value + ' times per week';
+                    if (value == 0) text = 'No regular exercise';
+                    if (value == 1) text = '1 time per week';
+                    document.getElementById('exerciseValue').textContent = text;
+                    console.log(`Health Calculator: Exercise slider changed to ${value} on step ${currentStep}`);
+                    updateProgress();
+                }
+            }
+            
+            if (sleepSlider) {
+                sleepSlider.oninput = function() {
+                    const value = this.value;
+                    document.getElementById('sleepValue').textContent = value + ' hours per night';
+                    console.log(`Health Calculator: Sleep slider changed to ${value} on step ${currentStep}`);
+                    updateProgress();
+                }
+            }
+            
             // Ensure the first step is visible and properly initialized
             showStep(1);
             

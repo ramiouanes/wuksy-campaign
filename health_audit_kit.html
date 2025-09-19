@@ -427,7 +427,7 @@
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 2rem;
-            align-items: flex-end;
+            align-items: start;
             margin: 2rem 0;
             padding: 2rem;
             background: linear-gradient(135deg, var(--primary-50), rgba(107, 157, 107, 0.05));
@@ -490,7 +490,8 @@
 
         .button-section {
             display: flex;
-            align-items: flex-end;
+            align-items: flex-start;
+            margin-top: 1.75rem; /* Align with input field (label + margin) */
         }
 
         .calculate-btn {
@@ -835,6 +836,7 @@
 
         .form-step.active {
             display: block;
+            opacity: 1 !important;
             animation: fadeInUp 0.5s ease-out;
         }
 
@@ -900,28 +902,6 @@
             </a>
         </div>
     </header>
-
-    <!-- Hero Section -->
-    <section class="hero">
-        <div class="container">
-            <div class="hero-content">
-                <div class="coming-soon-badge animate-float">
-                    <i data-lucide="search" width="16" height="16"></i>
-                    <span>Health Data Audit Kit</span>
-                </div>
-                
-                <h1>
-                    Find Peace in Your
-                    <span class="zen-text">Health Data Journey</span>
-                </h1>
-                
-                <p>
-                    Discover the 5 critical health tracking mistakes that could be sabotaging your wellness goals. 
-                    Get organized with our comprehensive audit and mindful action plan.
-                </p>
-            </div>
-        </div>
-    </section>
 
     <!-- Content Section -->
     <section class="content">
@@ -1245,7 +1225,7 @@
                 <div class="email-button-container">
                     <div class="email-input-section">
                         <label for="auditEmail" class="email-label">
-                            <i data-lucide="mail" width="16" height="16"></i>
+                            <i data-lucide="mail" width="14" height="16"></i>
                             Email Address
                         </label>
                         <input type="email" id="auditEmail" placeholder="Enter your email" 
@@ -1325,8 +1305,12 @@
 
         // Email validation function (fallback if WUKSY not loaded yet)
         function isValidAuditEmail(email) {
-            if (typeof WUKSY !== 'undefined' && WUKSY.isValidEmail) {
-                return WUKSY.isValidEmail(email);
+            try {
+                if (typeof WUKSY !== 'undefined' && WUKSY.isValidEmail) {
+                    return WUKSY.isValidEmail(email);
+                }
+            } catch (error) {
+                console.warn('WUKSY email validation not available:', error);
             }
             // Fallback email validation
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -1375,13 +1359,23 @@
         }
 
         function showAuditStep(stepNumber) {
+            console.log(`Audit Kit: Showing step ${stepNumber}`);
+            // Update current step
+            currentAuditStep = stepNumber;
+            
             // Hide all steps
             document.querySelectorAll('.form-step').forEach(step => {
                 step.classList.remove('active');
             });
             
             // Show current step
-            document.getElementById(`step${stepNumber}`).classList.add('active');
+            const targetStep = document.getElementById(`step${stepNumber}`);
+            if (targetStep) {
+                targetStep.classList.add('active');
+                console.log(`Audit Kit: Step ${stepNumber} is now active`);
+            } else {
+                console.error(`Audit Kit: Step ${stepNumber} not found`);
+            }
             
             updateAuditProgress();
         }
@@ -1439,6 +1433,7 @@
 
         // Initialize stepped form
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('Audit Kit: DOM loaded, initializing...');
             // Ensure the first step is visible and properly initialized
             showAuditStep(1);
             
