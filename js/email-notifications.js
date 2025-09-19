@@ -68,7 +68,7 @@ async function sendWaitlistConfirmation(email, userData = {}) {
             signup_source: userData.source || 'main',
             signup_date: new Date().toLocaleDateString(),
             member_count: '2,847+',
-            early_access_link: 'https://wuksy.com/early-access',
+            early_access_link: 'https://wuksy.com/',
             unsubscribe_link: `https://wuksy.com/unsubscribe?email=${encodeURIComponent(email)}`
         };
 

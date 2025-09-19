@@ -398,6 +398,19 @@
         .check-btn:hover::before {
             left: 100%;
         }
+
+        .check-btn:disabled {
+            background: var(--neutral-400) !important;
+            color: var(--neutral-500);
+            cursor: not-allowed !important;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        .check-btn:disabled:hover {
+            transform: none !important;
+            box-shadow: none !important;
+        }
         
         .results-section {
             display: none;
@@ -775,6 +788,24 @@
         </div>
         
         <div class="content">
+            <!-- Email Input Section -->
+            <div class="input-section" style="background: linear-gradient(135deg, var(--primary-50), rgba(107, 157, 107, 0.05)); border: 2px solid var(--primary-200); margin-bottom: 2rem;">
+                <h2 class="section-title">
+                    <i data-lucide="mail" width="24" height="24" style="vertical-align: middle; margin-right: 0.5rem; color: var(--primary-600);"></i>
+                    Email Address Required
+                </h2>
+                <p class="section-description">
+                    Enter your email to unlock personalized supplement interaction analysis and receive your detailed safety report.
+                </p>
+                <input type="email" id="supplementEmail" placeholder="Enter your email to unlock analysis" 
+                       style="width: 100%; padding: 1rem; border: 2px solid var(--primary-300); border-radius: 0.75rem; font-size: 1rem; transition: all 0.3s ease; background: white; margin-bottom: 1rem;"
+                       required>
+                <p style="font-size: 0.875rem; color: var(--primary-600); display: flex; align-items: center; gap: 0.5rem;">
+                    <i data-lucide="shield-check" width="16" height="16"></i>
+                    Get personalized timing recommendations and safety insights
+                </p>
+            </div>
+
             <div class="input-section">
                 <h2 class="section-title">
                     <i data-lucide="pill" width="24" height="24" style="vertical-align: middle; margin-right: 0.5rem; color: var(--primary-600);"></i>
@@ -829,9 +860,9 @@
                     Add Another Supplement
                 </button>
                 
-                <button class="check-btn" onclick="checkInteractions()">
+                <button class="check-btn" id="checkBtn" onclick="checkInteractions()" disabled>
                     <i data-lucide="sparkles" width="20" height="20" style="margin-right: 0.5rem;"></i>
-                    Analyze My Wellness Stack
+                    <span id="checkBtnText">Enter Email to Analyze Stack</span>
                 </button>
             </div>
             
@@ -1080,10 +1111,18 @@
         }
 
         async function checkInteractions() {
+            // Validate email first
+            const email = document.getElementById('supplementEmail').value;
+            if (!email || !WUKSY.isValidEmail(email)) {
+                alert('Please enter a valid email address to continue.');
+                document.getElementById('supplementEmail').focus();
+                return;
+            }
+            
             const supplements = getCurrentSupplements();
             
-            if (supplements.length < 2) {
-                alert('Please add at least 2 supplements to check for interactions.');
+            if (supplements.length < 1) {
+                alert('Please add at least 1 supplement to analyze.');
                 return;
             }
             
@@ -1329,8 +1368,9 @@
                 // Get current analysis data
                 const supplementData = window.currentSupplementAnalysis || {};
                 
-                // Capture email with supplement context
-                const result = await WUKSY.captureEmail(email, 'supplement', {
+                // Capture email with supplement context (use supplement email)
+                const supplementEmail = document.getElementById('supplementEmail').value;
+                const result = await WUKSY.captureEmail(supplementEmail, 'supplement', {
                     source_page: 'supplement_checker',
                     safety_score: supplementData.safetyScore,
                     supplement_count: supplementData.supplements ? supplementData.supplements.length : 0,
@@ -1341,7 +1381,7 @@
                     // Save supplement analysis if available
                     if (supplementData.supplements && supplementData.results) {
                         await WUKSY.saveSupplementAnalysis(
-                            email,
+                            supplementEmail,
                             supplementData.supplements,
                             supplementData.results,
                             supplementData.safetyScore,
@@ -1365,7 +1405,7 @@
                     
                     // Track conversion
                     await WUKSY.trackEvent('conversion', 'supplement', { 
-                        email,
+                        email: supplementEmail,
                         safety_score: supplementData.safetyScore,
                         supplement_count: supplementData.supplements ? supplementData.supplements.length : 0
                     });
@@ -1390,6 +1430,27 @@
         // Initialize Lucide icons
         document.addEventListener('DOMContentLoaded', function() {
             lucide.createIcons();
+        });
+
+        // Email validation and button state management
+        document.getElementById('supplementEmail').addEventListener('input', function() {
+            const email = this.value;
+            const checkBtn = document.getElementById('checkBtn');
+            const btnText = document.getElementById('checkBtnText');
+            
+            if (email && WUKSY.isValidEmail(email)) {
+                checkBtn.disabled = false;
+                btnText.textContent = 'Analyze My Wellness Stack';
+                checkBtn.style.background = 'linear-gradient(135deg, var(--primary-500), var(--primary-600))';
+                checkBtn.style.cursor = 'pointer';
+                this.style.borderColor = 'var(--primary-500)';
+            } else {
+                checkBtn.disabled = true;
+                btnText.textContent = 'Enter Email to Analyze Stack';
+                checkBtn.style.background = 'var(--neutral-400)';
+                checkBtn.style.cursor = 'not-allowed';
+                this.style.borderColor = email ? '#dc2626' : 'var(--primary-300)';
+            }
         });
 
         // Header scroll effect

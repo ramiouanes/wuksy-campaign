@@ -408,6 +408,19 @@
             transform: translateY(-2px);
             box-shadow: 0 8px 25px rgba(107, 157, 107, 0.4);
         }
+
+        .calculate-btn:disabled {
+            background: var(--neutral-400) !important;
+            color: var(--neutral-500);
+            cursor: not-allowed !important;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        .calculate-btn:disabled:hover {
+            transform: none !important;
+            box-shadow: none !important;
+        }
         
         /* Results Section */
         .results-container {
@@ -730,6 +743,26 @@
                     and discover personalized insights for your wellness optimization journey.
                 </p>
             </div>
+
+            <!-- Email Input Section -->
+            <div class="audit-section" style="background: linear-gradient(135deg, var(--primary-50), rgba(107, 157, 107, 0.05)); border: 2px solid var(--primary-200); margin-bottom: 3rem;">
+                <div class="section-header">
+                    <div class="section-icon">
+                        <i data-lucide="mail" width="24" height="24"></i>
+                    </div>
+                    <h2 class="section-title">Email Address Required</h2>
+                </div>
+                <div class="question-group" style="background: white;">
+                    <div class="question">Enter your email to unlock your personalized wellness data insights</div>
+                    <input type="email" id="auditEmail" placeholder="Enter your email address" 
+                           style="width: 100%; padding: 1rem; border: 2px solid var(--primary-300); border-radius: 0.75rem; font-size: 1rem; transition: all 0.3s ease; background: white; margin-top: 1rem;"
+                           required>
+                    <p style="font-size: 0.875rem; color: var(--primary-600); margin-top: 0.75rem; display: flex; align-items: center; gap: 0.5rem;">
+                        <i data-lucide="gift" width="16" height="16"></i>
+                        Get your FREE personalized health data organization template
+                    </p>
+                </div>
+            </div>
             <div class="audit-section">
                 <div class="section-header">
                     <div class="section-icon">
@@ -974,9 +1007,9 @@
                 </div>
             </div>
 
-            <button type="button" class="calculate-btn" onclick="calculateAuditScore()">
+            <button type="button" class="calculate-btn" id="auditCalculateBtn" onclick="calculateAuditScore()" disabled>
                 <i data-lucide="sparkles" width="20" height="20"></i>
-                Discover My Wellness Data Insights
+                <span id="auditCalculateBtnText">Enter Email to Discover Insights</span>
             </button>
 
             <div class="results-container" id="resultsContainer">
@@ -1064,6 +1097,27 @@
         // Initialize Lucide icons
         lucide.createIcons();
 
+        // Email validation and button state management
+        document.getElementById('auditEmail').addEventListener('input', function() {
+            const email = this.value;
+            const calculateBtn = document.getElementById('auditCalculateBtn');
+            const btnText = document.getElementById('auditCalculateBtnText');
+            
+            if (email && WUKSY.isValidEmail(email)) {
+                calculateBtn.disabled = false;
+                btnText.textContent = 'Discover My Wellness Data Insights';
+                calculateBtn.style.background = 'linear-gradient(135deg, var(--primary-500), var(--primary-600))';
+                calculateBtn.style.cursor = 'pointer';
+                this.style.borderColor = 'var(--primary-500)';
+            } else {
+                calculateBtn.disabled = true;
+                btnText.textContent = 'Enter Email to Discover Insights';
+                calculateBtn.style.background = 'var(--neutral-400)';
+                calculateBtn.style.cursor = 'not-allowed';
+                this.style.borderColor = email ? '#dc2626' : 'var(--primary-300)';
+            }
+        });
+
         // Header scroll effect
         window.addEventListener('scroll', function() {
             const header = document.querySelector('.header');
@@ -1090,6 +1144,14 @@
         }
 
         async function calculateAuditScore() {
+            // Validate email first
+            const email = document.getElementById('auditEmail').value;
+            if (!email || !WUKSY.isValidEmail(email)) {
+                alert('Please enter a valid email address to continue.');
+                document.getElementById('auditEmail').focus();
+                return;
+            }
+            
             const formData = new FormData();
             const radios = document.querySelectorAll('input[type="radio"]:checked');
             
@@ -1273,8 +1335,9 @@
                 // Get current audit data
                 const auditData = window.currentAuditResults || {};
                 
-                // Capture email with audit context
-                const result = await WUKSY.captureEmail(email, 'health_audit', {
+                // Capture email with audit context (use audit email)
+                const auditEmail = document.getElementById('auditEmail').value;
+                const result = await WUKSY.captureEmail(auditEmail, 'health_audit', {
                     source_page: 'health_audit_kit',
                     audit_score: auditData.score,
                     has_audit: !!auditData.score
@@ -1284,7 +1347,7 @@
                     // Save audit results if available
                     if (auditData.score && auditData.responses) {
                         await WUKSY.saveQuizResults(
-                            email,
+                            auditEmail,
                             'health_audit',
                             auditData.responses,
                             auditData.score,
@@ -1306,7 +1369,7 @@
                     
                     // Track conversion
                     await WUKSY.trackEvent('conversion', 'health_audit', { 
-                        email,
+                        email: auditEmail,
                         audit_score: auditData.score
                     });
                     

@@ -430,6 +430,19 @@
             left: 100%;
         }
 
+        .calculate-btn:disabled {
+            background: var(--neutral-400) !important;
+            color: var(--neutral-500);
+            cursor: not-allowed !important;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        .calculate-btn:disabled:hover {
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
         /* Results Section */
         .result-container {
             display: none;
@@ -850,6 +863,21 @@
     <div class="main-container">
         <!-- Form Container -->
         <div class="form-container">
+            <!-- Email Input Section -->
+            <div class="question-group" style="margin-bottom: 2.5rem; background: linear-gradient(135deg, var(--primary-50), rgba(107, 157, 107, 0.05)); border: 2px solid var(--primary-200);">
+                <label style="font-size: 1.25rem; color: var(--primary-700); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                    <i data-lucide="mail" width="20" height="20"></i>
+                    Email Address Required
+                </label>
+                <input type="email" id="calculatorEmail" placeholder="Enter your email to unlock your health score" 
+                       style="width: 100%; padding: 1rem; border: 2px solid var(--primary-300); border-radius: 0.75rem; font-size: 1rem; transition: all 0.3s ease; background: white;"
+                       required>
+                <p style="font-size: 0.875rem; color: var(--primary-600); margin-top: 0.75rem; display: flex; align-items: center; gap: 0.5rem;">
+                    <i data-lucide="sparkles" width="16" height="16"></i>
+                    We'll email you a detailed report with personalized recommendations
+                </p>
+            </div>
+
             <form id="healthForm">
                 <div class="question-group">
                     <label>What's your age range?</label>
@@ -993,9 +1021,9 @@
                     </div>
                 </div>
 
-                <button type="button" class="calculate-btn" onclick="calculateScore()">
+                <button type="button" class="calculate-btn" id="calculateBtn" onclick="calculateScore()" disabled>
                     <i data-lucide="sparkles" width="20" height="20"></i>
-                    Calculate My Health Score
+                    <span id="calculateBtnText">Enter Email to Calculate Health Score</span>
                 </button>
             </form>
 
@@ -1082,6 +1110,27 @@
         // Initialize Lucide icons
         lucide.createIcons();
 
+        // Email validation and button state management
+        document.getElementById('calculatorEmail').addEventListener('input', function() {
+            const email = this.value;
+            const calculateBtn = document.getElementById('calculateBtn');
+            const btnText = document.getElementById('calculateBtnText');
+            
+            if (email && WUKSY.isValidEmail(email)) {
+                calculateBtn.disabled = false;
+                btnText.textContent = 'Calculate My Health Score';
+                calculateBtn.style.background = 'linear-gradient(135deg, var(--primary-500), var(--primary-600))';
+                calculateBtn.style.cursor = 'pointer';
+                this.style.borderColor = 'var(--primary-500)';
+            } else {
+                calculateBtn.disabled = true;
+                btnText.textContent = 'Enter Email to Calculate Health Score';
+                calculateBtn.style.background = 'var(--neutral-400)';
+                calculateBtn.style.cursor = 'not-allowed';
+                this.style.borderColor = email ? '#dc2626' : 'var(--primary-300)';
+            }
+        });
+
         // Update slider values
         document.getElementById('exercise').oninput = function() {
             const value = this.value;
@@ -1109,6 +1158,14 @@
         });
 
         async function calculateScore() {
+            // Validate email first
+            const email = document.getElementById('calculatorEmail').value;
+            if (!email || !WUKSY.isValidEmail(email)) {
+                alert('Please enter a valid email address to continue.');
+                document.getElementById('calculatorEmail').focus();
+                return;
+            }
+            
             const form = document.getElementById('healthForm');
             const formData = new FormData(form);
             
@@ -1278,9 +1335,10 @@
             WUKSY.setButtonLoading(button, true, 'Joining...');
             
             try {
-                // Capture email with health score context
+                // Capture email with health score context (use calculator email)
+                const calculatorEmail = document.getElementById('calculatorEmail').value;
                 const healthScoreData = window.currentHealthScore || {};
-                const result = await WUKSY.captureEmail(email, 'health_score', {
+                const result = await WUKSY.captureEmail(calculatorEmail, 'health_score', {
                     source_page: 'health_score_calculator',
                     health_score: healthScoreData.score,
                     health_category: healthScoreData.category
@@ -1290,7 +1348,7 @@
                     // Save quiz results if available
                     if (window.currentHealthScore) {
                         await WUKSY.saveQuizResults(
-                            email,
+                            calculatorEmail,
                             'health_score',
                             healthScoreData.responses,
                             healthScoreData.score,
