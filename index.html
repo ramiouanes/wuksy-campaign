@@ -107,9 +107,9 @@
         }
 
         .header-container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
-            padding: 0 1rem;
+            padding: 0 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -160,9 +160,9 @@
         }
 
         .hero-container {
-            max-width: 4xl;
+            max-width: 72rem;
             margin: 0 auto;
-            max-width: 56rem;
+            padding: 0 2rem;
         }
 
         .hero-content {
@@ -322,10 +322,8 @@
             border-radius: 1rem;
             box-shadow: 0 4px 20px rgba(107, 157, 107, 0.1);
             border: 1px solid var(--primary-100);
-            margin: 2rem 0;
-            max-width: 28rem;
-            margin-left: auto;
-            margin-right: auto;
+            margin: 2rem auto;
+            max-width: 36rem;
         }
 
         .hero-value-stack {
@@ -461,8 +459,9 @@
         }
 
         .preview-container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
+            padding: 0 2rem;
         }
 
         .section-header {
@@ -497,6 +496,14 @@
         @media (min-width: 768px) {
             .tools-grid {
                 grid-template-columns: repeat(2, 1fr);
+                gap: 2.5rem;
+            }
+        }
+
+        @media (min-width: 1200px) {
+            .tools-grid {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 2rem;
             }
         }
 
@@ -751,9 +758,10 @@
         }
 
         .footer-container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             text-align: center;
+            padding: 0 2rem;
         }
 
         .footer-logo {
@@ -792,13 +800,18 @@
                 padding: 1.5rem 1rem 3rem;
             }
 
+            .hero-container {
+                padding: 0 1rem;
+            }
+
             .hero h1 {
                 font-size: 2.5rem;
             }
 
             .hero-signup-section {
                 padding: 1.5rem;
-                margin: 1.5rem 0;
+                margin: 1.5rem auto;
+                max-width: calc(100% - 2rem);
             }
 
             .hero-value-stack {
@@ -816,6 +829,18 @@
 
             .trust-signal {
                 font-size: 0.7rem;
+            }
+
+            .preview-container {
+                padding: 0 1rem;
+            }
+
+            .header-container {
+                padding: 0 1rem;
+            }
+
+            .footer-container {
+                padding: 0 1rem;
             }
         }
 
@@ -1125,7 +1150,7 @@
 
     <!-- Testimonials Section -->
     <section class="testimonials-section zen-gradient">
-        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
             <div class="text-center mb-12">
                 <h2 class="text-3xl md:text-4xl font-light text-neutral-800 mb-4">
                     Stories of <span class="zen-text font-medium">Tranquility</span>
