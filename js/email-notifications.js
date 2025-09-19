@@ -1,34 +1,60 @@
 // WUKSY Campaign - Email Notifications Service
-// EmailJS Integration for sending automated emails
+// Supabase Edge Functions Integration for sending automated emails (FREE!)
 
 const EMAIL_CONFIG = {
-    serviceId: 'service_wuksy', // Replace with your EmailJS service ID
+    supabaseUrl: 'https://jmezneoxfjhyxjiwylab.supabase.co',
+    functionUrl: 'https://jmezneoxfjhyxjiwylab.supabase.co/functions/v1/send-email',
     templateIds: {
-        waitlist: 'template_waitlist',
-        bloodTest: 'template_blood_test', 
-        healthScore: 'template_health_score',
-        healthAudit: 'template_health_audit',
-        supplements: 'template_supplements'
-    },
-    userId: 'wuksy_campaign' // Replace with your EmailJS user ID
+        waitlist: 'waitlist',
+        bloodTest: 'bloodTest', 
+        healthScore: 'healthScore',
+        healthAudit: 'healthAudit',
+        supplements: 'supplements'
+    }
 };
 
 /**
- * Initialize EmailJS
+ * Initialize Email Service (no longer needed with Supabase)
  */
-function initializeEmailJS() {
+function initializeEmailService() {
+    console.log('✅ Email service ready (Supabase Edge Functions)');
+    return true;
+}
+
+/**
+ * Send email via Supabase Edge Function
+ */
+async function sendEmail(to, template, data) {
     try {
-        if (typeof emailjs !== 'undefined') {
-            emailjs.init(EMAIL_CONFIG.userId);
-            console.log('✅ EmailJS initialized successfully');
-            return true;
-        } else {
-            console.warn('⚠️ EmailJS library not loaded');
-            return false;
+        const supabase = window.getSupabase();
+        if (!supabase) {
+            throw new Error('Supabase not initialized');
         }
+
+        const response = await fetch(EMAIL_CONFIG.functionUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${supabase.supabaseKey}`,
+            },
+            body: JSON.stringify({
+                to,
+                template,
+                data
+            })
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.error || 'Failed to send email');
+        }
+
+        console.log('✅ Email sent successfully:', result);
+        return { success: true, result };
     } catch (error) {
-        console.error('❌ Failed to initialize EmailJS:', error);
-        return false;
+        console.error('❌ Failed to send email:', error);
+        return { success: false, error: error.message };
     }
 }
 
@@ -37,8 +63,7 @@ function initializeEmailJS() {
  */
 async function sendWaitlistConfirmation(email, userData = {}) {
     try {
-        const templateParams = {
-            to_email: email,
+        const emailData = {
             user_name: userData.name || email.split('@')[0],
             signup_source: userData.source || 'main',
             signup_date: new Date().toLocaleDateString(),
@@ -47,27 +72,21 @@ async function sendWaitlistConfirmation(email, userData = {}) {
             unsubscribe_link: `https://wuksy.com/unsubscribe?email=${encodeURIComponent(email)}`
         };
 
-        const result = await emailjs.send(
-            EMAIL_CONFIG.serviceId,
-            EMAIL_CONFIG.templateIds.waitlist,
-            templateParams
-        );
+        const result = await sendEmail(email, 'waitlist', emailData);
 
         // Log the notification
-        await logEmailNotification(email, 'waitlist_confirmation', 'sent', {
-            emailjs_response: result,
-            template_params: templateParams
+        await logEmailNotification(email, 'waitlist_confirmation', result.success ? 'sent' : 'failed', {
+            supabase_response: result,
+            template_data: emailData
         });
 
-        console.log('✅ Waitlist confirmation email sent:', result);
-        return { success: true, messageId: result.text };
+        return result;
     } catch (error) {
         console.error('❌ Failed to send waitlist confirmation:', error);
         
         // Log the failure
         await logEmailNotification(email, 'waitlist_confirmation', 'failed', {
-            error: error.message,
-            error_code: error.status
+            error: error.message
         });
 
         return { success: false, error: error.message };
@@ -79,8 +98,7 @@ async function sendWaitlistConfirmation(email, userData = {}) {
  */
 async function sendBloodTestNotification(email, analysisData = {}) {
     try {
-        const templateParams = {
-            to_email: email,
+        const emailData = {
             user_name: email.split('@')[0],
             health_score: analysisData.healthScore || 'N/A',
             key_findings: analysisData.keyFindings || 'Analysis completed',
@@ -91,19 +109,14 @@ async function sendBloodTestNotification(email, analysisData = {}) {
             unsubscribe_link: `https://wuksy.com/unsubscribe?email=${encodeURIComponent(email)}`
         };
 
-        const result = await emailjs.send(
-            EMAIL_CONFIG.serviceId,
-            EMAIL_CONFIG.templateIds.bloodTest,
-            templateParams
-        );
+        const result = await sendEmail(email, 'bloodTest', emailData);
 
-        await logEmailNotification(email, 'blood_test_completion', 'sent', {
-            emailjs_response: result,
+        await logEmailNotification(email, 'blood_test_completion', result.success ? 'sent' : 'failed', {
+            supabase_response: result,
             analysis_data: analysisData
         });
 
-        console.log('✅ Blood test notification sent:', result);
-        return { success: true, messageId: result.text };
+        return result;
     } catch (error) {
         console.error('❌ Failed to send blood test notification:', error);
         await logEmailNotification(email, 'blood_test_completion', 'failed', { error: error.message });
@@ -116,8 +129,7 @@ async function sendBloodTestNotification(email, analysisData = {}) {
  */
 async function sendHealthScoreNotification(email, scoreData = {}) {
     try {
-        const templateParams = {
-            to_email: email,
+        const emailData = {
             user_name: email.split('@')[0],
             health_score: scoreData.score || 'N/A',
             score_category: scoreData.category || 'Good',
@@ -129,19 +141,14 @@ async function sendHealthScoreNotification(email, scoreData = {}) {
             unsubscribe_link: `https://wuksy.com/unsubscribe?email=${encodeURIComponent(email)}`
         };
 
-        const result = await emailjs.send(
-            EMAIL_CONFIG.serviceId,
-            EMAIL_CONFIG.templateIds.healthScore,
-            templateParams
-        );
+        const result = await sendEmail(email, 'healthScore', emailData);
 
-        await logEmailNotification(email, 'health_score_completion', 'sent', {
-            emailjs_response: result,
+        await logEmailNotification(email, 'health_score_completion', result.success ? 'sent' : 'failed', {
+            supabase_response: result,
             score_data: scoreData
         });
 
-        console.log('✅ Health score notification sent:', result);
-        return { success: true, messageId: result.text };
+        return result;
     } catch (error) {
         console.error('❌ Failed to send health score notification:', error);
         await logEmailNotification(email, 'health_score_completion', 'failed', { error: error.message });
@@ -154,8 +161,7 @@ async function sendHealthScoreNotification(email, scoreData = {}) {
  */
 async function sendHealthAuditNotification(email, auditData = {}) {
     try {
-        const templateParams = {
-            to_email: email,
+        const emailData = {
             user_name: email.split('@')[0],
             audit_score: auditData.auditScore || 'Completed',
             critical_gaps: auditData.criticalGaps || 3,
@@ -166,19 +172,14 @@ async function sendHealthAuditNotification(email, auditData = {}) {
             unsubscribe_link: `https://wuksy.com/unsubscribe?email=${encodeURIComponent(email)}`
         };
 
-        const result = await emailjs.send(
-            EMAIL_CONFIG.serviceId,
-            EMAIL_CONFIG.templateIds.healthAudit,
-            templateParams
-        );
+        const result = await sendEmail(email, 'healthAudit', emailData);
 
-        await logEmailNotification(email, 'health_audit_completion', 'sent', {
-            emailjs_response: result,
+        await logEmailNotification(email, 'health_audit_completion', result.success ? 'sent' : 'failed', {
+            supabase_response: result,
             audit_data: auditData
         });
 
-        console.log('✅ Health audit notification sent:', result);
-        return { success: true, messageId: result.text };
+        return result;
     } catch (error) {
         console.error('❌ Failed to send health audit notification:', error);
         await logEmailNotification(email, 'health_audit_completion', 'failed', { error: error.message });
@@ -191,8 +192,7 @@ async function sendHealthAuditNotification(email, auditData = {}) {
  */
 async function sendSupplementNotification(email, supplementData = {}) {
     try {
-        const templateParams = {
-            to_email: email,
+        const emailData = {
             user_name: email.split('@')[0],
             safety_score: supplementData.safetyScore || 'Good',
             supplements_checked: supplementData.supplementsCount || 0,
@@ -203,19 +203,14 @@ async function sendSupplementNotification(email, supplementData = {}) {
             unsubscribe_link: `https://wuksy.com/unsubscribe?email=${encodeURIComponent(email)}`
         };
 
-        const result = await emailjs.send(
-            EMAIL_CONFIG.serviceId,
-            EMAIL_CONFIG.templateIds.supplements,
-            templateParams
-        );
+        const result = await sendEmail(email, 'supplements', emailData);
 
-        await logEmailNotification(email, 'supplement_check_completion', 'sent', {
-            emailjs_response: result,
+        await logEmailNotification(email, 'supplement_check_completion', result.success ? 'sent' : 'failed', {
+            supabase_response: result,
             supplement_data: supplementData
         });
 
-        console.log('✅ Supplement notification sent:', result);
-        return { success: true, messageId: result.text };
+        return result;
     } catch (error) {
         console.error('❌ Failed to send supplement notification:', error);
         await logEmailNotification(email, 'supplement_check_completion', 'failed', { error: error.message });
@@ -278,10 +273,9 @@ async function getEmailNotificationHistory(email, limit = 10) {
     }
 }
 
-// Initialize EmailJS when the script loads
+// Initialize Email Service when the script loads
 document.addEventListener('DOMContentLoaded', function() {
-    // Wait a bit for EmailJS library to load
-    setTimeout(initializeEmailJS, 1000);
+    initializeEmailService();
 });
 
 // Make functions globally available
@@ -293,5 +287,5 @@ window.EmailNotifications = {
     sendSupplementNotification,
     logEmailNotification,
     getEmailNotificationHistory,
-    initializeEmailJS
+    initializeEmailService
 };
