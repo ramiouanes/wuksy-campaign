@@ -7,7 +7,7 @@
 // Capture email signup with source tracking
 async function captureEmail(email, source, metadata = {}) {
     try {
-        const supabase = await window.getSupabase();
+        const supabase = window.getSupabase();
         if (!supabase) throw new Error('Supabase not initialized');
 
         // Check if email already exists
@@ -65,7 +65,7 @@ async function captureEmail(email, source, metadata = {}) {
 // Save quiz results to database
 async function saveQuizResults(email, quizType, results, score, recommendations = {}) {
     try {
-        const supabase = await window.getSupabase();
+        const supabase = window.getSupabase();
         if (!supabase) throw new Error('Supabase not initialized');
 
         const { data, error } = await supabase
@@ -94,7 +94,7 @@ async function saveQuizResults(email, quizType, results, score, recommendations 
 // Get latest quiz results for an email
 async function getQuizResults(email, quizType) {
     try {
-        const supabase = await window.getSupabase();
+        const supabase = window.getSupabase();
         if (!supabase) throw new Error('Supabase not initialized');
 
         const { data, error } = await supabase
@@ -121,7 +121,7 @@ async function getQuizResults(email, quizType) {
 // Upload blood test file
 async function uploadBloodTest(file, email, additionalData = {}) {
     try {
-        const supabase = await window.getSupabase();
+        const supabase = window.getSupabase();
         if (!supabase) throw new Error('Supabase not initialized');
 
         // Generate unique file path
@@ -167,7 +167,7 @@ async function uploadBloodTest(file, email, additionalData = {}) {
 // Get file upload status
 async function getUploadStatus(email, uploadId) {
     try {
-        const supabase = await window.getSupabase();
+        const supabase = window.getSupabase();
         if (!supabase) throw new Error('Supabase not initialized');
 
         const { data, error } = await supabase
@@ -193,7 +193,7 @@ async function getUploadStatus(email, uploadId) {
 // Save supplement interaction analysis
 async function saveSupplementAnalysis(email, supplements, interactionResults, safetyScore, timingRecommendations) {
     try {
-        const supabase = await window.getSupabase();
+        const supabase = window.getSupabase();
         if (!supabase) throw new Error('Supabase not initialized');
 
         const { data, error } = await supabase
