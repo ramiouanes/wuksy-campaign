@@ -1108,17 +1108,18 @@
             }
         });
 
-        function calculateScore() {
+        async function calculateScore() {
             const form = document.getElementById('healthForm');
             const formData = new FormData(form);
             
             // Add loading state
             const button = document.querySelector('.calculate-btn');
-            const originalText = button.innerHTML;
-            button.innerHTML = '<i data-lucide="loader-2" width="20" height="20" style="animation: spin 1s linear infinite;"></i> Calculating...';
-            button.disabled = true;
+            WUKSY.setButtonLoading(button, true, 'Calculating...');
             
-            setTimeout(() => {
+            // Track form start
+            await WUKSY.trackEvent('form_start', 'health_score');
+            
+            setTimeout(async () => {
                 let totalScore = 0;
                 let maxScore = 0;
                 
@@ -1159,6 +1160,17 @@
                 
                 // Calculate percentage
                 const percentage = Math.round((totalScore / maxScore) * 100);
+                
+                // Collect all form responses for storage
+                const responses = {
+                    age: parseInt(formData.get('age')),
+                    energy: parseInt(formData.get('energy')),
+                    exercise: parseInt(formData.get('exercise')),
+                    diet: parseInt(formData.get('diet')),
+                    sleep: parseInt(formData.get('sleep')),
+                    stress: parseInt(formData.get('stress')),
+                    supplements: parseInt(formData.get('supplements'))
+                };
                 
                 // Display results
                 document.getElementById('scoreCircle').textContent = percentage;
@@ -1224,8 +1236,18 @@
                 });
                 
                 // Reset button
-                button.innerHTML = originalText;
-                button.disabled = false;
+                WUKSY.setButtonLoading(button, false);
+                
+                // Store results in global variable for signup form
+                window.currentHealthScore = {
+                    score: percentage,
+                    category: category,
+                    responses: responses,
+                    recommendations: recommendations
+                };
+                
+                // Track completion
+                await WUKSY.trackEvent('form_completed', 'health_score', { score: percentage, category });
                 
                 // Show results
                 document.getElementById('resultContainer').style.display = 'block';
@@ -1240,44 +1262,80 @@
             }, 2000);
         }
 
-        // Handle signup
-        document.getElementById('signupForm').onsubmit = function(e) {
+        // Handle signup with Supabase integration
+        document.getElementById('signupForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             const email = document.getElementById('emailInput').value;
             const button = this.querySelector('.signup-btn');
-            const originalText = button.innerHTML;
+            
+            // Validate email
+            if (!WUKSY.isValidEmail(email)) {
+                WUKSY.showErrorMessage(this, 'Please enter a valid email address.');
+                return;
+            }
             
             // Show loading state
-            button.innerHTML = '<i data-lucide="loader-2" width="16" height="16" style="animation: spin 1s linear infinite;"></i> Joining...';
-            button.disabled = true;
+            WUKSY.setButtonLoading(button, true, 'Joining...');
             
-            setTimeout(() => {
-                // Success state
-                button.innerHTML = '<i data-lucide="check" width="16" height="16"></i> Welcome!';
-                button.style.background = '#10b981';
+            try {
+                // Capture email with health score context
+                const healthScoreData = window.currentHealthScore || {};
+                const result = await WUKSY.captureEmail(email, 'health_score', {
+                    source_page: 'health_score_calculator',
+                    health_score: healthScoreData.score,
+                    health_category: healthScoreData.category
+                });
                 
-                // Show success message
-                const successMessage = document.createElement('div');
-                successMessage.className = 'success-message';
-                successMessage.innerHTML = `
-                    <strong>🌱 Welcome to your wellness journey!</strong><br>
-                    Check your email for early access details and your exclusive 50% discount.
-                `;
-                this.appendChild(successMessage);
-                
-                // Reset form after delay
-                setTimeout(() => {
-                    button.innerHTML = originalText;
-                    button.disabled = false;
-                    button.style.background = '';
-                    this.reset();
-                    if (successMessage.parentNode) {
-                        successMessage.remove();
+                if (result.success) {
+                    // Save quiz results if available
+                    if (window.currentHealthScore) {
+                        await WUKSY.saveQuizResults(
+                            email,
+                            'health_score',
+                            healthScoreData.responses,
+                            healthScoreData.score,
+                            { 
+                                category: healthScoreData.category,
+                                recommendations: healthScoreData.recommendations 
+                            }
+                        );
                     }
-                }, 4000);
+                    
+                    // Success state
+                    button.innerHTML = '<i data-lucide="check" width="16" height="16"></i> Welcome!';
+                    button.style.background = '#10b981';
+                    
+                    // Show personalized success message
+                    const scoreText = healthScoreData.score ? ` Your health score of ${healthScoreData.score} shows great potential!` : '';
+                    const message = result.isNew ? 
+                        `Welcome to your wellness journey!${scoreText} Check your email for early access details and your exclusive 50% discount.` :
+                        `Welcome back!${scoreText} Your results have been updated.`;
+                    
+                    WUKSY.showSuccessMessage(this, message);
+                    
+                    // Track conversion
+                    await WUKSY.trackEvent('conversion', 'health_score', { 
+                        email, 
+                        score: healthScoreData.score,
+                        category: healthScoreData.category 
+                    });
+                    
+                    // Reset form after delay
+                    setTimeout(() => {
+                        WUKSY.setButtonLoading(button, false);
+                        button.style.background = '';
+                        this.reset();
+                    }, 4000);
+                } else {
+                    throw new Error(result.error || 'Failed to sign up');
+                }
                 
-            }, 1500);
-        }
+            } catch (error) {
+                console.error('Signup error:', error);
+                WUKSY.setButtonLoading(button, false);
+                WUKSY.showErrorMessage(this, 'Something went wrong. Please try again.');
+            }
+        });
 
         // Add click handlers for radio options
         document.querySelectorAll('.radio-option').forEach(option => {
@@ -1313,5 +1371,11 @@
             });
         });
     </script>
+
+    <!-- Supabase Configuration -->
+    <script src="js/config.js"></script>
+    
+    <!-- Supabase Utilities -->
+    <script src="js/supabase-utils.js"></script>
 </body>
 </html>

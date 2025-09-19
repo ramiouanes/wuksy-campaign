@@ -1100,9 +1100,30 @@
 
         function handleFiles(files) {
             if (files.length > 0) {
-                uploadedFiles = Array.from(files);
-                updateUploadZone();
-                showFormSection();
+                // Validate file types and sizes
+                const validFiles = [];
+                const maxSize = 10 * 1024 * 1024; // 10MB
+                const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/jpg'];
+                
+                for (let file of files) {
+                    if (!allowedTypes.includes(file.type)) {
+                        alert(`File "${file.name}" is not supported. Please upload PDF, JPG, or PNG files.`);
+                        continue;
+                    }
+                    if (file.size > maxSize) {
+                        alert(`File "${file.name}" is too large. Maximum size is 10MB.`);
+                        continue;
+                    }
+                    validFiles.push(file);
+                }
+                
+                if (validFiles.length > 0) {
+                    uploadedFiles = validFiles;
+                    updateUploadZone();
+                    showFormSection();
+                } else {
+                    uploadedFiles = [];
+                }
             }
         }
 
@@ -1130,7 +1151,7 @@
             document.getElementById('formSection').scrollIntoView({ behavior: 'smooth' });
         }
 
-        function analyzeBloodTest() {
+        async function analyzeBloodTest() {
             // Validate form
             const form = document.getElementById('analysisForm');
             const formData = new FormData(form);
@@ -1154,13 +1175,39 @@
             document.getElementById('loadingSection').style.display = 'block';
             document.getElementById('loadingSection').scrollIntoView({ behavior: 'smooth' });
             
+            // Track analysis start
+            await WUKSY.trackEvent('analysis_start', 'blood_test', {
+                file_count: uploadedFiles.length,
+                age: parseInt(age),
+                gender,
+                activity,
+                diet
+            });
+            
+            // Collect form data for storage
+            const formDataObj = {
+                age: parseInt(age),
+                gender: gender,
+                activity: activity,
+                diet: diet,
+                goals: getCheckedValues('goal_'),
+                symptoms: getCheckedValues('symptom_'),
+                supplements: formData.get('supplements') || ''
+            };
+            
+            // Store form data globally for later use
+            window.currentBloodTestData = {
+                formData: formDataObj,
+                files: uploadedFiles.map(f => ({ name: f.name, size: f.size, type: f.type }))
+            };
+            
             // Simulate analysis time
-            setTimeout(() => {
-                generateResults(formData);
+            setTimeout(async () => {
+                await generateResults(formData);
             }, 4000);
         }
 
-        function generateResults(formData) {
+        async function generateResults(formData) {
             // Hide loading, show results
             document.getElementById('loadingSection').style.display = 'none';
             
@@ -1202,6 +1249,20 @@
                 `;
                 
                 resultsGrid.appendChild(card);
+            });
+            
+            // Store results globally for signup form
+            window.currentBloodTestResults = {
+                healthScore,
+                recommendations,
+                analysisData: window.currentBloodTestData
+            };
+            
+            // Track analysis completion
+            await WUKSY.trackEvent('analysis_completed', 'blood_test', { 
+                health_score: healthScore,
+                age: parseInt(formData.get('age')),
+                gender: formData.get('gender')
             });
             
             document.getElementById('resultsSection').style.display = 'block';
@@ -1338,15 +1399,98 @@
             return Array.from(checkboxes).map(cb => cb.value);
         }
 
-        // Handle signup
-        document.getElementById('signupForm').onsubmit = function(e) {
+        // Handle signup with file upload and analysis data
+        document.getElementById('signupForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             const email = document.getElementById('emailInput').value;
+            const button = this.querySelector('button[type="submit"]');
             
-            alert('🌱 Welcome to your WUKSY wellness journey! You\'ll receive your complete biomarker analysis report and exclusive early access updates soon.');
+            // Validate email
+            if (!WUKSY.isValidEmail(email)) {
+                WUKSY.showErrorMessage(this, 'Please enter a valid email address.');
+                return;
+            }
             
-            this.reset();
-        }
+            // Show loading state
+            WUKSY.setButtonLoading(button, true, 'Joining...');
+            
+            try {
+                // Get current analysis data
+                const bloodTestData = window.currentBloodTestData || {};
+                const bloodTestResults = window.currentBloodTestResults || {};
+                
+                // Capture email with blood test context
+                const result = await WUKSY.captureEmail(email, 'blood_test', {
+                    source_page: 'blood_test_analyzer',
+                    health_score: bloodTestResults.healthScore,
+                    file_count: bloodTestData.files ? bloodTestData.files.length : 0,
+                    has_analysis: !!bloodTestResults.healthScore
+                });
+                
+                if (result.success) {
+                    // Upload files if available
+                    if (uploadedFiles && uploadedFiles.length > 0) {
+                        for (let file of uploadedFiles) {
+                            try {
+                                await WUKSY.uploadBloodTest(file, email, {
+                                    form_data: bloodTestData.formData,
+                                    analysis_results: bloodTestResults,
+                                    upload_context: 'blood_test_analyzer'
+                                });
+                            } catch (uploadError) {
+                                console.warn('File upload failed:', uploadError);
+                                // Continue with other files even if one fails
+                            }
+                        }
+                    }
+                    
+                    // Save analysis results if available
+                    if (bloodTestResults.healthScore && bloodTestData.formData) {
+                        await WUKSY.saveQuizResults(
+                            email,
+                            'blood_test_analysis',
+                            bloodTestData.formData,
+                            bloodTestResults.healthScore,
+                            bloodTestResults.recommendations || {}
+                        );
+                    }
+                    
+                    // Success state
+                    button.innerHTML = '<i data-lucide="check" width="16" height="16"></i> Analysis Saved!';
+                    button.style.background = '#10b981';
+                    
+                    // Show personalized success message
+                    const scoreText = bloodTestResults.healthScore ? ` Your wellness harmony score of ${bloodTestResults.healthScore} has been saved!` : '';
+                    const fileText = uploadedFiles && uploadedFiles.length > 0 ? ` Your ${uploadedFiles.length} file(s) have been securely uploaded.` : '';
+                    const message = result.isNew ? 
+                        `🌱 Welcome to your WUKSY wellness journey!${scoreText}${fileText} Check your email for your complete biomarker analysis report and exclusive early access updates.` :
+                        `Welcome back!${scoreText}${fileText} Your analysis has been updated.`;
+                    
+                    WUKSY.showSuccessMessage(this, message);
+                    
+                    // Track conversion
+                    await WUKSY.trackEvent('conversion', 'blood_test', { 
+                        email,
+                        health_score: bloodTestResults.healthScore,
+                        files_uploaded: uploadedFiles ? uploadedFiles.length : 0
+                    });
+                    
+                    // Reset form after delay
+                    setTimeout(() => {
+                        WUKSY.setButtonLoading(button, false);
+                        button.style.background = '';
+                        this.reset();
+                    }, 5000);
+                } else {
+                    throw new Error(result.error || 'Failed to sign up');
+                }
+                
+            } catch (error) {
+                console.error('Signup error:', error);
+                WUKSY.setButtonLoading(button, false);
+                WUKSY.showErrorMessage(this, 'Something went wrong. Please try again.');
+            }
+        });
 
         // Add smooth scrolling for navigation
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
@@ -1362,5 +1506,11 @@
             });
         });
     </script>
+
+    <!-- Supabase Configuration -->
+    <script src="js/config.js"></script>
+    
+    <!-- Supabase Utilities -->
+    <script src="js/supabase-utils.js"></script>
 </body>
 </html>
