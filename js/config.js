@@ -17,11 +17,20 @@ function initializeSupabase() {
             throw new Error('Supabase library not loaded');
         }
         
-        // Create client using the global supabase object
-        supabase = window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
+        // Create client using the global supabase object with explicit schema configuration
+        supabase = window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey, {
+            db: {
+                schema: 'public'
+            },
+            auth: {
+                autoRefreshToken: false,
+                persistSession: false
+            }
+        });
         
         console.log('✅ Supabase initialized successfully');
         console.log('🔗 Connected to:', SUPABASE_CONFIG.url);
+        console.log('📊 Using schema: public');
         return supabase;
     } catch (error) {
         console.error('❌ Failed to initialize Supabase:', error);
