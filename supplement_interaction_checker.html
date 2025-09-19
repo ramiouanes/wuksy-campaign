@@ -365,8 +365,8 @@
             background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
             color: white;
             border: none;
-            padding: 1.25rem 2.5rem;
-            font-size: 1.125rem;
+            padding: 1rem 1.5rem;
+            font-size: 1rem;
             font-weight: 600;
             border-radius: 3rem;
             cursor: pointer;
@@ -410,6 +410,96 @@
         .check-btn:disabled:hover {
             transform: none !important;
             box-shadow: none !important;
+        }
+
+        /* Email and Button Layout */
+        .email-button-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            align-items: flex-end;
+            margin: 2rem 0;
+            padding: 2rem;
+            background: linear-gradient(135deg, var(--primary-50), rgba(107, 157, 107, 0.05));
+            border: 1px solid var(--primary-200);
+            border-radius: 1rem;
+        }
+
+        .email-input-section {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .email-label {
+            font-weight: 500;
+            color: var(--primary-700);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .email-input {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid var(--primary-300);
+            border-radius: 0.75rem;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+            margin-bottom: 0.5rem;
+            height: 3.5rem;
+            box-sizing: border-box;
+        }
+
+        .email-input:focus {
+            outline: none;
+            border-color: var(--primary-500);
+            box-shadow: 0 0 0 3px rgba(107, 157, 107, 0.1);
+        }
+
+        .email-hint {
+            font-size: 0.875rem;
+            color: var(--primary-600);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin: 0;
+        }
+
+        .privacy-note {
+            font-size: 0.75rem;
+            color: var(--neutral-500);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin: 0.25rem 0 0 0;
+            font-style: italic;
+        }
+
+        .button-section {
+            display: flex;
+            align-items: flex-end;
+        }
+
+        .check-btn {
+            width: 100%;
+            margin: 0;
+            height: 3.5rem;
+            box-sizing: border-box;
+        }
+
+        @media (max-width: 768px) {
+            .email-button-container {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+                padding: 1.5rem;
+            }
+            
+            .button-section {
+                align-items: stretch;
+            }
         }
         
         .results-section {
@@ -788,24 +878,6 @@
         </div>
         
         <div class="content">
-            <!-- Email Input Section -->
-            <div class="input-section" style="background: linear-gradient(135deg, var(--primary-50), rgba(107, 157, 107, 0.05)); border: 2px solid var(--primary-200); margin-bottom: 2rem;">
-                <h2 class="section-title">
-                    <i data-lucide="mail" width="24" height="24" style="vertical-align: middle; margin-right: 0.5rem; color: var(--primary-600);"></i>
-                    Email Address Required
-                </h2>
-                <p class="section-description">
-                    Enter your email to unlock personalized supplement interaction analysis and receive your detailed safety report.
-                </p>
-                <input type="email" id="supplementEmail" placeholder="Enter your email to unlock analysis" 
-                       style="width: 100%; padding: 1rem; border: 2px solid var(--primary-300); border-radius: 0.75rem; font-size: 1rem; transition: all 0.3s ease; background: white; margin-bottom: 1rem;"
-                       required>
-                <p style="font-size: 0.875rem; color: var(--primary-600); display: flex; align-items: center; gap: 0.5rem;">
-                    <i data-lucide="shield-check" width="16" height="16"></i>
-                    Get personalized timing recommendations and safety insights
-                </p>
-            </div>
-
             <div class="input-section">
                 <h2 class="section-title">
                     <i data-lucide="pill" width="24" height="24" style="vertical-align: middle; margin-right: 0.5rem; color: var(--primary-600);"></i>
@@ -860,10 +932,31 @@
                     Add Another Supplement
                 </button>
                 
-                <button class="check-btn" id="checkBtn" onclick="checkInteractions()" disabled>
-                    <i data-lucide="sparkles" width="20" height="20" style="margin-right: 0.5rem;"></i>
-                    <span id="checkBtnText">Enter Email to Analyze Stack</span>
-                </button>
+                <!-- Email and Button Section -->
+                <div class="email-button-container">
+                    <div class="email-input-section">
+                        <label for="supplementEmail" class="email-label">
+                            <i data-lucide="mail" width="16" height="16"></i>
+                            Email Address
+                        </label>
+                        <input type="email" id="supplementEmail" placeholder="Enter your email" 
+                               class="email-input" required>
+                        <p class="email-hint">
+                            <i data-lucide="shield-check" width="14" height="14"></i>
+                            Get your safety report via email
+                        </p>
+                        <p class="privacy-note">
+                            <i data-lucide="shield" width="12" height="12"></i>
+                            We'll never spam you or share your email
+                        </p>
+                    </div>
+                    <div class="button-section">
+                        <button class="check-btn" id="checkBtn" onclick="checkInteractions()" disabled>
+                            <i data-lucide="sparkles" width="20" height="20" style="margin-right: 0.5rem;"></i>
+                            <span id="checkBtnText">Enter Email to Analyze</span>
+                        </button>
+                    </div>
+                </div>
             </div>
             
             <div class="results-section" id="resultsSection">
@@ -1440,13 +1533,13 @@
             
             if (email && WUKSY.isValidEmail(email)) {
                 checkBtn.disabled = false;
-                btnText.textContent = 'Analyze My Wellness Stack';
+                btnText.textContent = 'Analyze My Stack';
                 checkBtn.style.background = 'linear-gradient(135deg, var(--primary-500), var(--primary-600))';
                 checkBtn.style.cursor = 'pointer';
                 this.style.borderColor = 'var(--primary-500)';
             } else {
                 checkBtn.disabled = true;
-                btnText.textContent = 'Enter Email to Analyze Stack';
+                btnText.textContent = 'Enter Email to Analyze';
                 checkBtn.style.background = 'var(--neutral-400)';
                 checkBtn.style.cursor = 'not-allowed';
                 this.style.borderColor = email ? '#dc2626' : 'var(--primary-300)';
