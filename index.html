@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WUKSY - AI-Powered Personalized Wellness Platform | Coming Soon</title>
+    <meta name="description" content="Transform your blood test confusion into a personalized wellness roadmap. Experience our preview tools while we prepare the full WUKSY platform.">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            /* WUKSY Brand Colors */
+            --primary-50: #f6f8f6;
+            --primary-100: #e8f0e8;
+            --primary-200: #d3e4d3;
+            --primary-300: #b3d1b3;
+            --primary-400: #8bb88b;
+            --primary-500: #6b9d6b;
+            --primary-600: #5a8a5a;
+            --primary-700: #4a724a;
+            --primary-800: #3d5d3d;
+            --primary-900: #334d33;
+
+            --neutral-50: #fafafa;
+            --neutral-100: #f7f7f7;
+            --neutral-200: #f0f0f0;
+            --neutral-300: #e8e8e8;
+            --neutral-400: #d1d1d1;
+            --neutral-500: #a3a3a3;
+            --neutral-600: #737373;
+            --neutral-700: #525252;
+            --neutral-800: #404040;
+            --neutral-900: #262626;
+
+            --stone-50: #fafaf9;
+            --stone-100: #f5f5f4;
+            --stone-500: #78716c;
+            --stone-600: #57534e;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            line-height: 1.6;
+            color: var(--neutral-800);
+            background-color: var(--neutral-50);
+            overflow-x: hidden;
+        }
+
+        /* Zen-inspired animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .animate-fade-in-up {
+            animation: fadeInUp 0.8s ease-out forwards;
+        }
+
+        .animate-float {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        /* Typography */
+        .zen-text {
+            color: var(--primary-600);
+        }
+
+        .zen-gradient {
+            background: linear-gradient(135deg, var(--primary-50) 0%, var(--stone-50) 100%);
+        }
+
+        /* Header */
+        .header {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(232, 232, 232, 0.5);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            transition: all 0.3s ease;
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 4rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+            color: var(--neutral-800);
+        }
+
+        .logo-icon {
+            background: rgba(107, 157, 107, 0.1);
+            padding: 0.5rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-text {
+            font-size: 1.25rem;
+            font-weight: 500;
+            letter-spacing: -0.025em;
+        }
+
+        /* Hero Section */
+        .hero {
+            position: relative;
+            padding: 6rem 1rem 5rem;
+            text-align: center;
+            background: linear-gradient(135deg, var(--neutral-50) 0%, rgba(246, 248, 246, 0.5) 100%);
+        }
+
+        .hero-container {
+            max-width: 4xl;
+            margin: 0 auto;
+            max-width: 56rem;
+        }
+
+        .hero-content {
+            opacity: 0;
+            animation: fadeInUp 0.8s ease-out 0.2s forwards;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            font-weight: 300;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            color: var(--neutral-800);
+        }
+
+        .hero .zen-text {
+            display: block;
+            font-weight: 500;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: var(--neutral-600);
+            max-width: 32rem;
+            margin: 0 auto 2rem;
+            line-height: 1.6;
+        }
+
+        .coming-soon-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--primary-50);
+            color: var(--primary-700);
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 2rem;
+            border: 1px solid var(--primary-100);
+        }
+
+        .cta-buttons {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 3rem;
+        }
+
+        @media (min-width: 640px) {
+            .cta-buttons {
+                flex-direction: row;
+                justify-content: center;
+            }
+            .hero h1 {
+                font-size: 4rem;
+            }
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 2rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background: var(--primary-500);
+            color: white;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-600);
+            box-shadow: 0 4px 12px rgba(107, 157, 107, 0.3);
+            transform: translateY(-1px);
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--primary-600);
+            border: 1px solid var(--primary-300);
+        }
+
+        .btn-ghost:hover {
+            background: var(--primary-50);
+            border-color: var(--primary-400);
+        }
+
+        /* Trust indicators */
+        .trust-indicators {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease-out 0.6s forwards;
+        }
+
+        .trust-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--neutral-500);
+            font-size: 0.875rem;
+        }
+
+        /* Preview Tools Section */
+        .preview-section {
+            padding: 5rem 1rem;
+            background: white;
+        }
+
+        .preview-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease-out 0.2s forwards;
+        }
+
+        .section-header h2 {
+            font-size: 2.5rem;
+            font-weight: 300;
+            color: var(--neutral-800);
+            margin-bottom: 1rem;
+        }
+
+        .section-header p {
+            font-size: 1.125rem;
+            color: var(--neutral-600);
+            max-width: 32rem;
+            margin: 0 auto;
+        }
+
+        /* Tool Cards Grid */
+        .tools-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+
+        @media (min-width: 768px) {
+            .tools-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .tool-card {
+            background: white;
+            border: 1px solid var(--neutral-200);
+            border-radius: 1rem;
+            padding: 2rem;
+            transition: all 0.3s ease;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease-out forwards;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tool-card:nth-child(1) { animation-delay: 0.3s; }
+        .tool-card:nth-child(2) { animation-delay: 0.4s; }
+        .tool-card:nth-child(3) { animation-delay: 0.5s; }
+        .tool-card:nth-child(4) { animation-delay: 0.6s; }
+
+        .tool-card:hover {
+            box-shadow: 0 10px 25px rgba(107, 157, 107, 0.1);
+            transform: translateY(-2px);
+            border-color: var(--primary-200);
+        }
+
+        .tool-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-400), var(--primary-600));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .tool-card:hover::before {
+            opacity: 1;
+        }
+
+        .tool-icon {
+            width: 3rem;
+            height: 3rem;
+            background: var(--primary-50);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            color: var(--primary-600);
+            font-size: 1.5rem;
+        }
+
+        .tool-card h3 {
+            font-size: 1.5rem;
+            font-weight: 500;
+            color: var(--neutral-800);
+            margin-bottom: 1rem;
+        }
+
+        .tool-card p {
+            color: var(--neutral-600);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .tool-card .btn {
+            width: 100%;
+            justify-content: center;
+        }
+
+        /* Newsletter Section */
+        .newsletter-section {
+            padding: 5rem 1rem;
+            background: linear-gradient(135deg, var(--primary-50) 0%, var(--stone-50) 100%);
+        }
+
+        .newsletter-container {
+            max-width: 48rem;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .newsletter-content {
+            opacity: 0;
+            animation: fadeInUp 0.8s ease-out 0.2s forwards;
+        }
+
+        .newsletter-section h2 {
+            font-size: 2.5rem;
+            font-weight: 300;
+            color: var(--neutral-800);
+            margin-bottom: 1rem;
+        }
+
+        .newsletter-section p {
+            font-size: 1.125rem;
+            color: var(--neutral-600);
+            margin-bottom: 2rem;
+        }
+
+        .newsletter-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            max-width: 24rem;
+            margin: 0 auto 2rem;
+        }
+
+        @media (min-width: 640px) {
+            .newsletter-form {
+                flex-direction: row;
+            }
+        }
+
+        .newsletter-input {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--neutral-300);
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .newsletter-input:focus {
+            outline: none;
+            border-color: var(--primary-500);
+            box-shadow: 0 0 0 3px rgba(107, 157, 107, 0.1);
+        }
+
+        .early-access-note {
+            font-size: 0.875rem;
+            color: var(--neutral-500);
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--neutral-900);
+            color: white;
+            padding: 3rem 1rem 2rem;
+        }
+
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .footer-logo-icon {
+            background: rgba(107, 157, 107, 0.2);
+            padding: 0.5rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .footer p {
+            color: var(--neutral-400);
+            margin-bottom: 1rem;
+        }
+
+        .medical-disclaimer {
+            border-top: 1px solid var(--neutral-700);
+            padding-top: 2rem;
+            margin-top: 2rem;
+            font-size: 0.875rem;
+            color: var(--neutral-500);
+        }
+
+        /* Responsive Design */
+        @media (min-width: 768px) {
+            .hero {
+                padding: 8rem 1rem 6rem;
+            }
+            
+            .section-header h2 {
+                font-size: 3rem;
+            }
+        }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--neutral-100);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--neutral-400);
+            border-radius: 2px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--neutral-500);
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-container">
+            <a href="#" class="logo">
+                <div class="logo-icon">
+                    <i data-lucide="leaf" width="20" height="20"></i>
+                </div>
+                <span class="logo-text">WUKSY</span>
+            </a>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-container">
+            <div class="hero-content">
+                <div class="coming-soon-badge animate-float">
+                    <i data-lucide="sparkles" width="16" height="16"></i>
+                    <span>Coming Soon</span>
+                </div>
+                
+                <h1>
+                    Find Peace in Your
+                    <span class="zen-text">Health Journey</span>
+                </h1>
+                
+                <p>
+                    Transform your blood test confusion into a personalized wellness roadmap. 
+                    Experience our preview tools while we prepare the full WUKSY platform.
+                </p>
+
+                <div class="cta-buttons">
+                    <a href="#tools" class="btn btn-primary">
+                        Try Preview Tools
+                        <i data-lucide="arrow-right" width="16" height="16"></i>
+                    </a>
+                    <a href="#notify" class="btn btn-ghost">
+                        Get Early Access
+                    </a>
+                </div>
+
+                <div class="trust-indicators">
+                    <div class="trust-item">
+                        <i data-lucide="shield" width="16" height="16" style="color: var(--primary-500);"></i>
+                        <span>Private & Secure</span>
+                    </div>
+                    <div class="trust-item">
+                        <i data-lucide="heart" width="16" height="16" style="color: var(--primary-500);"></i>
+                        <span>Science-Based</span>
+                    </div>
+                    <div class="trust-item">
+                        <i data-lucide="clock" width="16" height="16" style="color: var(--primary-500);"></i>
+                        <span>5 Minutes</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Preview Tools Section -->
+    <section id="tools" class="preview-section">
+        <div class="preview-container">
+            <div class="section-header">
+                <h2>
+                    Experience <span class="zen-text">WUKSY</span> Preview Tools
+                </h2>
+                <p>
+                    Get a taste of our AI-powered wellness insights with these interactive tools, 
+                    designed to give you a glimpse into your future personalized health journey.
+                </p>
+            </div>
+
+            <div class="tools-grid">
+                <!-- Blood Test Analyzer -->
+                <div class="tool-card">
+                    <div class="tool-icon">
+                        🧬
+                    </div>
+                    <h3>AI Blood Test Analyzer</h3>
+                    <p>
+                        Upload your blood test results and get a personalized wellness plan in minutes. 
+                        Our AI processes 40+ biomarkers to create thoughtful recommendations tailored to your unique needs.
+                    </p>
+                    <a href="blood_test_upload_tool.html" class="btn btn-primary" target="_blank">
+                        Try Blood Analyzer
+                        <i data-lucide="external-link" width="16" height="16"></i>
+                    </a>
+                </div>
+
+                <!-- Health Score Calculator -->
+                <div class="tool-card">
+                    <div class="tool-icon">
+                        📊
+                    </div>
+                    <h3>AI Health Score Calculator</h3>
+                    <p>
+                        Discover your personalized health optimization potential in 60 seconds. 
+                        Answer simple questions to get insights into your wellness journey and areas for improvement.
+                    </p>
+                    <a href="health_score_calculator.html" class="btn btn-primary" target="_blank">
+                        Calculate Score
+                        <i data-lucide="external-link" width="16" height="16"></i>
+                    </a>
+                </div>
+
+                <!-- Health Data Audit Kit -->
+                <div class="tool-card">
+                    <div class="tool-icon">
+                        🔍
+                    </div>
+                    <h3>Health Data Audit Kit</h3>
+                    <p>
+                        Discover the 5 critical health tracking mistakes that could be sabotaging your wellness goals. 
+                        Get organized with our comprehensive audit and action plan template.
+                    </p>
+                    <a href="health_audit_kit.html" class="btn btn-primary" target="_blank">
+                        Start Audit
+                        <i data-lucide="external-link" width="16" height="16"></i>
+                    </a>
+                </div>
+
+                <!-- Supplement Interaction Checker -->
+                <div class="tool-card">
+                    <div class="tool-icon">
+                        ⚗️
+                    </div>
+                    <h3>Supplement Interaction Checker</h3>
+                    <p>
+                        Ensure your supplements work together safely and effectively. 
+                        Check for potential interactions and get basic recommendations for your supplement stack.
+                    </p>
+                    <a href="supplement_interaction_checker.html" class="btn btn-primary" target="_blank">
+                        Check Interactions
+                        <i data-lucide="external-link" width="16" height="16"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div style="text-align: center; padding: 2rem; background: var(--primary-50); border-radius: 1rem; border: 1px solid var(--primary-100);">
+                <h3 style="color: var(--primary-700); margin-bottom: 1rem; font-weight: 500;">
+                    <i data-lucide="sparkles" width="20" height="20" style="vertical-align: middle; margin-right: 0.5rem;"></i>
+                    Full WUKSY Platform Coming Soon
+                </h3>
+                <p style="color: var(--primary-600); margin-bottom: 0;">
+                    These preview tools offer just a glimpse of WUKSY's full capabilities. 
+                    Our complete platform will integrate all these insights into one seamless, 
+                    AI-powered wellness experience.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Newsletter Section -->
+    <section id="notify" class="newsletter-section">
+        <div class="newsletter-container">
+            <div class="newsletter-content">
+                <h2>
+                    Be the First to Experience <span class="zen-text">WUKSY</span>
+                </h2>
+                <p>
+                    Join our early access list and be among the first to transform your health journey 
+                    with our complete AI-powered wellness platform.
+                </p>
+
+                <form class="newsletter-form" action="#" method="POST">
+                    <input 
+                        type="email" 
+                        class="newsletter-input" 
+                        placeholder="Enter your email address"
+                        required
+                    >
+                    <button type="submit" class="btn btn-primary">
+                        Get Early Access
+                        <i data-lucide="arrow-right" width="16" height="16"></i>
+                    </button>
+                </form>
+
+                <p class="early-access-note">
+                    <i data-lucide="gift" width="16" height="16" style="vertical-align: middle; margin-right: 0.25rem;"></i>
+                    Early access members get 50% off their first analysis + exclusive bonuses
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-logo">
+                <div class="footer-logo-icon">
+                    <i data-lucide="leaf" width="20" height="20" style="color: var(--primary-400);"></i>
+                </div>
+                <span style="font-size: 1.25rem; font-weight: 500;">WUKSY</span>
+            </div>
+            
+            <p>AI-Powered Personalized Wellness Platform</p>
+            
+            <div class="medical-disclaimer">
+                <p>
+                    <strong>Medical Disclaimer:</strong> WUKSY provides educational information only and is not intended to diagnose, treat, cure, or prevent any disease. 
+                    Always consult with qualified healthcare professionals before making health decisions.
+                </p>
+                <p style="margin-top: 1rem;">
+                    © 2024 WUKSY. All rights reserved.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Header scroll effect
+        window.addEventListener('scroll', function() {
+            const header = document.querySelector('.header');
+            if (window.scrollY > 100) {
+                header.style.background = 'rgba(255, 255, 255, 0.95)';
+                header.style.boxShadow = '0 1px 3px rgba(0, 0, 0, 0.1)';
+            } else {
+                header.style.background = 'rgba(255, 255, 255, 0.8)';
+                header.style.boxShadow = 'none';
+            }
+        });
+
+        // Form submission handler (placeholder)
+        document.querySelector('.newsletter-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = this.querySelector('input[type="email"]').value;
+            
+            // Replace this with your actual form submission logic
+            alert(`Thank you for your interest! We'll notify ${email} when WUKSY launches.`);
+            
+            // Reset form
+            this.reset();
+        });
+
+        // Intersection Observer for animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.animationPlayState = 'running';
+                }
+            });
+        }, observerOptions);
+
+        // Observe all animated elements
+        document.querySelectorAll('.tool-card, .section-header, .newsletter-content').forEach(el => {
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>
