@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Health Score Calculator - Wuksy</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            padding: 40px 30px;
+            text-align: center;
+            color: white;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .form-container {
+            padding: 40px 30px;
+        }
+        
+        .question-group {
+            margin-bottom: 25px;
+            padding: 20px;
+            border: 2px solid #f0f0f0;
+            border-radius: 12px;
+            transition: border-color 0.3s;
+        }
+        
+        .question-group:hover {
+            border-color: #4facfe;
+        }
+        
+        .question-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #333;
+            font-size: 1.1rem;
+        }
+        
+        .radio-group {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 8px;
+        }
+        
+        .radio-option {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .radio-option:hover {
+            background: #f8f9ff;
+            border-color: #4facfe;
+        }
+        
+        .radio-option input[type="radio"] {
+            margin-right: 10px;
+        }
+        
+        .radio-option input[type="radio"]:checked + label {
+            color: #4facfe;
+            font-weight: 600;
+        }
+        
+        .slider-group {
+            margin-top: 10px;
+        }
+        
+        .slider {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: #ddd;
+            outline: none;
+            -webkit-appearance: none;
+        }
+        
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #4facfe;
+            cursor: pointer;
+        }
+        
+        .slider-value {
+            text-align: center;
+            margin-top: 8px;
+            font-weight: 600;
+            color: #4facfe;
+        }
+        
+        .calculate-btn {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            border: none;
+            padding: 18px 40px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: transform 0.3s;
+            display: block;
+            margin: 30px auto;
+            min-width: 200px;
+        }
+        
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .result-container {
+            display: none;
+            text-align: center;
+            padding: 30px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            margin: 20px;
+            border-radius: 15px;
+            color: white;
+        }
+        
+        .score-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+        
+        .recommendations {
+            background: #f8f9fa;
+            margin: 20px 0;
+            padding: 25px;
+            border-radius: 12px;
+            text-align: left;
+            color: #333;
+        }
+        
+        .recommendations h3 {
+            color: #4facfe;
+            margin-bottom: 15px;
+        }
+        
+        .recommendations ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .recommendations li {
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .recommendations li:before {
+            content: "✓";
+            color: #4facfe;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        
+        .cta-section {
+            background: #1a1a1a;
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+        
+        .cta-section h2 {
+            margin-bottom: 15px;
+            font-size: 1.8rem;
+        }
+        
+        .cta-section p {
+            margin-bottom: 25px;
+            opacity: 0.9;
+        }
+        
+        .signup-form {
+            display: flex;
+            gap: 10px;
+            max-width: 400px;
+            margin: 0 auto;
+            flex-wrap: wrap;
+        }
+        
+        .signup-form input {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        
+        .signup-btn {
+            background: #4facfe;
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+        
+        .signup-btn:hover {
+            background: #2196f3;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .form-container {
+                padding: 20px 15px;
+            }
+            
+            .question-group {
+                padding: 15px;
+            }
+            
+            .signup-form {
+                flex-direction: column;
+            }
+            
+            .signup-form input {
+                margin-bottom: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧬 AI Health Score</h1>
+            <p>Discover your personalized health optimization potential in 60 seconds</p>
+        </div>
+        
+        <div class="form-container">
+            <form id="healthForm">
+                <div class="question-group">
+                    <label>What's your age range?</label>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" name="age" value="5" id="age1">
+                            <label for="age1">18-25 years</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" name="age" value="4" id="age2">
+                            <label for="age2">26-35 years</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" name="age" value="3" id="age3">
+                            <label for="age3">36-45 years</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" name="age" value="2" id="age4">
+                            <label for="age4">46-55 years</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" name="age" value="1" id="age5">
+                            <label for="age5">55+ years</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="question-group">
+                    <label>How would you rate your energy levels?</label>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" name="energy" value="5" id="energy1">
+                            <label for="energy1">Excellent - I'm always energized</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" name="energy" value="4" id="energy2">
+                            <label for="energy2">Good - Usually feel energetic</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" name="energy" value="3" id="energy3">
+                            <label for="energy3">Average - Some good days, some tired days</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" name="energy" value="2" id="energy4">
+                            <label for="energy4">Low - Often feel tired or sluggish</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" name="energy" value="1" id="energy5">
+                            <label for="energy5">Very low - Constantly exhausted</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="question-group">
+                    <label>How often do you exercise per week?</label>
+                    <div class="slider-group">
+                        <input type="range" min="0" max="7" value="3" class="slider" id="exercise" name="exercise">
+                        <div class="slider-value" id="exerciseValue">3 times per week</div>
+                    </div>
+                </div>
+
+                <div class="question-group">
+                    <label>How would you describe your diet?</label>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" name="diet" value="5" id="diet1">
+                            <label for="diet1">Excellent - Balanced, whole foods, minimal processed</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" name="diet" value="4" id="diet2">
+                            <label for="diet2">Good - Mostly healthy with occasional treats</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" name="diet" value="3" id="diet3">
+                            <label for="diet3">Average - Mix of healthy and unhealthy foods</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" name="diet" value="2" id="diet4">
+                            <label for="diet4">Poor - Lots of processed foods and fast food</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" name="diet" value="1" id="diet5">
+                            <label for="diet5">Very poor - Mostly processed, little nutrition</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="question-group">
+                    <label>How many hours of quality sleep do you get?</label>
+                    <div class="slider-group">
+                        <input type="range" min="4" max="10" value="7" class="slider" id="sleep" name="sleep">
+                        <div class="slider-value" id="sleepValue">7 hours per night</div>
+                    </div>
+                </div>
+
+                <div class="question-group">
+                    <label>How would you rate your stress levels?</label>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" name="stress" value="5" id="stress1">
+                            <label for="stress1">Very low - I feel calm and in control</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" name="stress" value="4" id="stress2">
+                            <label for="stress2">Low - Occasional stress but manageable</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" name="stress" value="3" id="stress3">
+                            <label for="stress3">Moderate - Regular stress that I cope with</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" name="stress" value="2" id="stress4">
+                            <label for="stress4">High - Frequently overwhelmed</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" name="stress" value="1" id="stress5">
+                            <label for="stress5">Very high - Constantly stressed and anxious</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="question-group">
+                    <label>Do you currently take any supplements?</label>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" name="supplements" value="3" id="supp1">
+                            <label for="supp1">Yes, based on blood test results</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" name="supplements" value="2" id="supp2">
+                            <label for="supp2">Yes, but just general vitamins</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" name="supplements" value="1" id="supp3">
+                            <label for="supp3">No, but I'm interested</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" name="supplements" value="0" id="supp4">
+                            <label for="supp4">No, and not interested</label>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="button" class="calculate-btn" onclick="calculateScore()">
+                    🔬 Calculate My Health Score
+                </button>
+            </form>
+
+            <div class="result-container" id="resultContainer">
+                <div class="score-circle" id="scoreCircle">
+                    85
+                </div>
+                <h2 id="scoreTitle">Your Health Score</h2>
+                <p id="scoreDescription">Based on your responses, here's your current health optimization potential</p>
+                
+                <div class="recommendations" id="recommendations">
+                    <h3>🎯 Your Personalized Recommendations</h3>
+                    <ul id="recommendationsList">
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="cta-section">
+            <h2>🚀 Ready to Unlock Your Full Health Potential?</h2>
+            <p>Get AI-powered blood analysis and personalized supplement recommendations when Wuksy launches</p>
+            <p><strong>Early Bird Bonus: 50% off your first analysis</strong></p>
+            
+            <form class="signup-form" id="signupForm">
+                <input type="email" placeholder="Enter your email address" required id="emailInput">
+                <button type="submit" class="signup-btn">Join Waitlist</button>
+            </form>
+            
+            <p style="margin-top: 15px; font-size: 0.9rem; opacity: 0.7;">
+                🔒 Your email is secure. We'll only send you updates about Wuksy.
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // Update slider values
+        document.getElementById('exercise').oninput = function() {
+            const value = this.value;
+            document.getElementById('exerciseValue').textContent = value + ' times per week';
+        }
+
+        document.getElementById('sleep').oninput = function() {
+            const value = this.value;
+            document.getElementById('sleepValue').textContent = value + ' hours per night';
+        }
+
+        function calculateScore() {
+            const form = document.getElementById('healthForm');
+            const formData = new FormData(form);
+            
+            let totalScore = 0;
+            let maxScore = 0;
+            
+            // Age (weight: 1)
+            const age = parseInt(formData.get('age')) || 0;
+            totalScore += age;
+            maxScore += 5;
+            
+            // Energy (weight: 2)
+            const energy = parseInt(formData.get('energy')) || 0;
+            totalScore += energy * 2;
+            maxScore += 10;
+            
+            // Exercise (weight: 2)
+            const exercise = Math.min(parseInt(formData.get('exercise')) || 0, 5);
+            totalScore += exercise * 2;
+            maxScore += 10;
+            
+            // Diet (weight: 2)
+            const diet = parseInt(formData.get('diet')) || 0;
+            totalScore += diet * 2;
+            maxScore += 10;
+            
+            // Sleep (weight: 1.5)
+            const sleep = Math.max(0, Math.min(5, (parseInt(formData.get('sleep')) - 4) * 1.25));
+            totalScore += sleep * 1.5;
+            maxScore += 7.5;
+            
+            // Stress (weight: 1.5)
+            const stress = parseInt(formData.get('stress')) || 0;
+            totalScore += stress * 1.5;
+            maxScore += 7.5;
+            
+            // Supplements (weight: 0.5)
+            const supplements = parseInt(formData.get('supplements')) || 0;
+            totalScore += supplements * 0.5;
+            maxScore += 1.5;
+            
+            // Calculate percentage
+            const percentage = Math.round((totalScore / maxScore) * 100);
+            
+            // Display results
+            document.getElementById('scoreCircle').textContent = percentage;
+            document.getElementById('scoreTitle').textContent = `Your Health Score: ${percentage}/100`;
+            
+            let category, description, recommendations;
+            
+            if (percentage >= 80) {
+                category = "Excellent";
+                description = "Outstanding! You're already on a great health trajectory. Fine-tuning with blood analysis could help you reach peak optimization.";
+                recommendations = [
+                    "Consider advanced biomarker testing to optimize performance",
+                    "Track micronutrient levels for enhanced energy",
+                    "Explore personalized supplement stacks",
+                    "Monitor inflammatory markers for longevity"
+                ];
+            } else if (percentage >= 65) {
+                category = "Good";
+                description = "Great foundation! You have solid health habits with room for targeted improvements through data-driven insights.";
+                recommendations = [
+                    "Blood analysis could reveal hidden deficiencies",
+                    "Optimize vitamin D and B-complex levels",
+                    "Consider magnesium and omega-3 supplementation",
+                    "Track metabolic markers for energy improvement"
+                ];
+            } else if (percentage >= 45) {
+                category = "Fair";
+                description = "You're on the right track but there's significant room for improvement. Personalized recommendations could make a huge difference.";
+                recommendations = [
+                    "Comprehensive blood panel to identify key deficiencies",
+                    "Address potential vitamin B12 and iron deficiencies",
+                    "Optimize sleep and stress management strategies",
+                    "Personalized nutrition plan based on biomarkers"
+                ];
+            } else {
+                category = "Needs Improvement";
+                description = "There's tremendous opportunity to improve your health! Blood analysis and personalized recommendations could be life-changing.";
+                recommendations = [
+                    "Full metabolic panel to identify critical issues",
+                    "Address potential multiple nutrient deficiencies",
+                    "Implement gradual lifestyle changes with AI guidance",
+                    "Create personalized supplement protocol"
+                ];
+            }
+            
+            document.getElementById('scoreDescription').textContent = description;
+            
+            const recommendationsList = document.getElementById('recommendationsList');
+            recommendationsList.innerHTML = '';
+            recommendations.forEach(rec => {
+                const li = document.createElement('li');
+                li.textContent = rec;
+                recommendationsList.appendChild(li);
+            });
+            
+            document.getElementById('resultContainer').style.display = 'block';
+            document.getElementById('resultContainer').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Handle signup
+        document.getElementById('signupForm').onsubmit = function(e) {
+            e.preventDefault();
+            const email = document.getElementById('emailInput').value;
+            
+            // Here you would typically send to your email service
+            alert('Thanks for joining the waitlist! We\'ll notify you as soon as Wuksy launches with your exclusive 50% discount.');
+            
+            // Reset form
+            this.reset();
+        }
+
+        // Add click handlers for radio options
+        document.querySelectorAll('.radio-option').forEach(option => {
+            option.onclick = function() {
+                const radio = this.querySelector('input[type="radio"]');
+                radio.checked = true;
+            }
+        });
+    </script>
+</body>
+</html>
